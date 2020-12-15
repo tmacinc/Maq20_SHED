@@ -1,7 +1,10 @@
 from maq20 import MAQ20
 import time
 
-channel_map = {
+
+#-----Build maps for channels. Engineering variable to physical channel----- Could be called from config file.
+
+channel_map_inputs = {
     'T_shed2_cold': 'mod2_AI_TTC[0]',
     'T_shed2_hot': 'mod2_AI_TTC[1]',
     'T_shed3_cold': 'mod2_AI_TTC[2]',
@@ -11,7 +14,13 @@ channel_map = {
     'T_shed1_cold': 'mod2_AI_TTC[6]',
     'T_shed1_hot': 'mod2_AI_TTC[7]'
     }
-#-----Initialize daq and assign modules to physical variables-----
+
+channel_map_outputs = {
+    'Valve_shed2_hot': 'mod3_AO_VO[0]',
+    'Valve_shed2_cold': 'mod3_AO_VO[1]'
+}
+
+#-----Initialize daq and assign modules to physical variables----- Could be a function that's called only if needed.
 
 daq = MAQ20(ip_address="192.168.1.10", port=502)
 module_names = ['mod1_AI_MVDN', 'mod2_AI_TTC', 'mod3_AO_VO', 'mod4_DI_DIV20', 'mod5_DIO_DIOL', 'mod6_DIO_DIOL', 'mod7_DIO_DIOL', 'mod8_DIO_DIOL']
@@ -40,18 +49,25 @@ def read_modules(modules): #accepts dict of module name: module instance and ret
             data[key] = modules[key].read_data_counts(0, number_of_channels=modules[key].get_number_of_channels())
     return data
 
-def read_channels(channels): #accepts dict of the channel map, channel name: channel location. eg {'T_shed2_cold': 'mod2_AI_TTC[0]'} and returns dict of channel name: data
+def read_channels(channels): #accepts a list of requested channel names: eg ['T_shed2_cold': 'T_shed2_hot'] and returns dict of {channel name: values}
     data = {}
-    for key in channels:
-        data[key] = eval(channels[key])
+    for channel in channels:
+        if channel in channel_map_inputs.keys():
+            print(channel)
+            data[channel] = eval(channel_map_inputs[channel])
+        elif channel in channel_map_outputs.keys():
+            print(channel)
+            data[channel] = channel_map_outputs[channel]
+        else:
+            data[channel] = 'chan_name_error'
     return data
 
-
-data = read_channels(channel_map)
-print(data)
-
-def write_outputs(modules):
-    pass
-
-def map_channels(data, channels):
-    pass
+def write_channels(channels):    # accepts a dict of the engineering channels to write to and the desired values. Gets the physical channel from the map and writes to the physical channel.    for key, value in channels, values:
+    err = False
+    for key in channels:
+        if key in channel_map_outputs.keys():
+            print(key, channel_map_outputs[key], channels[key])
+            channel_map_outputs[key] = channels[key]
+        else:
+            err = True
+    return err
