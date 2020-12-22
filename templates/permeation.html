@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="static/js/permeation.js"></script>
+<div class="permeation_grid">
+<div class="permeation_overview">
+    <h3>Main Flow</h3>
+    <div class="permeation_overview_hot inline">
+        <div class="inline">    
+            <div>Hot loop</div>
+            <div id="Pump_main_hot">0</div>
+            <div>Flowrate</div>
+            <div id="Flow_main_hot">0</div>
+            <div>Temperature</div>
+            <div id="T_main_hot">0</div>
+            <div>Valve Position</div>
+            <div id="Valve_main_hot">0</div>
+        </div>
+        <div class="inline">    
+            <div>Cold Loop</div>
+            <div id="Pump_main_cold">0</div>
+            <div>Flowrate</div>
+            <div id="Flow_main_cold">0</div>
+            <div>Temperature</div>
+            <div id="T_main_cold">0</div>
+            <div>Valve Position</div>
+            <div id="Valve_main_cold">0</div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

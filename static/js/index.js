@@ -17,7 +17,7 @@ function fetchdata(){
 $(document).ready(function(){
 
 //schedule the ajax query
-    setInterval(fetchdata, 1000);
+//    setInterval(fetchdata, 1000);
     
 //connect the socket to the server.
 

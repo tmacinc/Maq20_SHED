@@ -1,3 +1,4 @@
+
 /* Add a black background color to the top navigation */
 .topnav {
     background-color: #333;
@@ -21,17 +22,40 @@
   }
   
   /* Add a color to the active/current link */
-  .topnav a.active {
+  .topnav a:active {
     background-color: #4CAF50;
     color: white;
   }
 
 .maq20_grid {
+  display: grid;
   grid-template: 1fr / 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+
 }  
 
 .module {
   display: inline-block;
   margin-left: 10px;
   text-align: right;
+}
+div {
+  margin: 5px;
+}
+.inline {
+  display: inline-flex;
+  margin: 5px;
+}
+
+.permeation_grid {
+  display: grid;
+  grid-template: 100px 500px / 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  width: 90%;
+  background-color: lightgray;
+  margin-left: auto;
+  margin-right: auto;
+}
+.permeation_overview {
+  grid-area: 1 / 2 / span 1 / span 8;
+  margin-left: auto;
+  margin-right: auto;
 }
