@@ -133,7 +133,7 @@ $(document).ready(function(){
         for (var i = 0; i < arrayLength; i++) {
             number_recieved = msg.number[i]
             number_string = '<p>' + number_recieved.toString() + '</p>';
-            $('#log' + i.toString()).html(number_string);
+            $('#log' + i).html(number_string);
         }  
     });
     socket.on('newmeasurement', function(msg) {

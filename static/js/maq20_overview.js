@@ -31,7 +31,13 @@ $(document).ready(function(){
 
 //schedule the ajax query
     setInterval(fetchdata, 1000);
-    
+
+    // update navbar with indicator of current page (currently color, can increase font etc.)
+    $("[href]").each(function() {
+        if (this.href == window.location.href) {
+            $(this).addClass("currentLink");
+        }
+    });
 //connect the socket to the server.
 
     //This is used for https transfers when deployed to online server

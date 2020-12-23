@@ -173,11 +173,11 @@ def write_channels(channels):    # accepts a dict of the engineering channels to
 #-----Function Testing-----
 
 #channels = ['T_shed3_l', 'Door_shed2_seal', 'Pump_main_cold']
-channels = ['Pump_main_hot', 'T_main_hot', 'Valve_main_hot', 'DIV20_Placeholder_11', 'Pump_main_cold', 'T_main_cold', 'Valve_main_cold']
+#channels = ['Pump_main_hot', 'T_main_hot', 'Valve_main_hot', 'DIV20_Placeholder_11', 'Pump_main_cold', 'T_main_cold', 'Valve_main_cold']
 
-try:
-    while True:
-        print(read_channels(channels))
-        time.sleep(1)
-except KeyboardInterrupt:
-    pass
+#try:
+#    while True:
+#        print(read_channels(channels))
+#        time.sleep(1)
+#except KeyboardInterrupt:
+#    pass
