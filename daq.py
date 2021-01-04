@@ -1,11 +1,12 @@
 from maq20 import MAQ20
 from maq20.modules.diol import DIOL
+from maq20 import utilities as utils
 import time
 
 
 #-----Build maps for channels. Engineering variable to physical channel----- Could be called from config file.
 
-channel_map = {
+channel_map_inputs = {
 'T_shed2_l': 'mod1_AI_MVDN[0]',
 'T_shed2_r': 'mod1_AI_MVDN[1]',
 'T_shed3_l': 'mod1_AI_MVDN[2]',
@@ -22,14 +23,6 @@ channel_map = {
 'T_main_cold': 'mod2_AI_TTC[5]',
 'T_shed1_cold': 'mod2_AI_TTC[6]',
 'T_shed1_hot': 'mod2_AI_TTC[7]',
-'Valve_shed3_hot': 'mod3_AO_VO[0]',
-'Valve_shed3_cold': 'mod3_AO_VO[1]',
-'Valve_shed2_hot': 'mod3_AO_VO[2]',
-'Valve_shed2_cold': 'mod3_AO_VO[3]',
-'Valve_main_hot': 'mod3_AO_VO[4]',
-'Valve_main_cold': 'mod3_AO_VO[5]',
-'Valve_shed1_cold': 'mod3_AO_VO[6]',
-'Valve_shed1_hot': 'mod3_AO_VO[7]',
 'DIV20_Placeholder_1': 'mod4_DI_DIV20[0]',
 'DIV20_Placeholder_2': 'mod4_DI_DIV20[1]',
 'DIV20_Placeholder_3': 'mod4_DI_DIV20[2]',
@@ -50,46 +43,56 @@ channel_map = {
 'DIV20_Placeholder_18': 'mod4_DI_DIV20[17]',
 'DIV20_Placeholder_19': 'mod4_DI_DIV20[18]',
 'DIV20_Placeholder_20': 'mod4_DI_DIV20[19]',
-'Pump_shed3_hot': 'mod5_DIO_DIOL[0]',
-'Pump_shed3_cold': 'mod5_DIO_DIOL[1]',
-'Pump_shed2_hot': 'mod5_DIO_DIOL[2]',
-'Pump_shed2_cold': 'mod5_DIO_DIOL[3]',
-'Pump_main_hot': 'mod5_DIO_DIOL[4]',
-'Flowmeter_shed3_hot': 'mod5_DIO_DIOL[5]',
-'Request_shed3': 'mod5_DIO_DIOL[6]',
-'Flowmeter_shed3_cold': 'mod5_DIO_DIOL[7]',
-'mod5_DIO_DIOL_Placeholder9': 'mod5_DIO_DIOL[8]',
-'mod5_DIO_DIOL_Placeholder10': 'mod5_DIO_DIOL[9]',
-'Pump_main_cold': 'mod6_DIO_DIOL[0]',
-'Pump_shed1_cold': 'mod6_DIO_DIOL[1]',
-'Pump_shed1_hot': 'mod6_DIO_DIOL[2]',
-'Door_shed2_seal': 'mod6_DIO_DIOL[3]',
-'Exhaust_shed2': 'mod6_DIO_DIOL[4]',
-'Flowmeter_shed2_hot': 'mod6_DIO_DIOL[5]',
-'Request_shed2': 'mod6_DIO_DIOL[6]',
-'Flowmeter_shed2_cold': 'mod6_DIO_DIOL[7]',
-'mod6_DIO_DIOL_Placeholder9': 'mod6_DIO_DIOL[8]',
-'mod6_DIO_DIOL_Placeholder10': 'mod6_DIO_DIOL[9]',
-'Request_good_shed1': 'mod7_DIO_DIOL[0]',
-'Request_good_shed2': 'mod7_DIO_DIOL[1]',
-'Request_good_shed3': 'mod7_DIO_DIOL[2]',
-'Door_shed3_seal': 'mod7_DIO_DIOL[3]',
-'Exhaust_shed3': 'mod7_DIO_DIOL[4]',
-'Flowmeter_main_hot': 'mod7_DIO_DIOL[5]',
-'Exhaust_airflow_confirmed': 'mod7_DIO_DIOL[6]',
-'Flowmeter_main_cold': 'mod7_DIO_DIOL[7]',
-'mod7_DIO_DIOL_Placeholder9': 'mod7_DIO_DIOL[8]',
-'mod7_DIO_DIOL_Placeholder10': 'mod7_DIO_DIOL[9]',
-'Exhaust_damper': 'mod8_DIO_DIOL[0]',
-'Exhaust_fan': 'mod8_DIO_DIOL[1]',
-'mod8_DIO_DIOL_Placeholder3': 'mod8_DIO_DIOL[2]',
-'mod8_DIO_DIOL_Placeholder4': 'mod8_DIO_DIOL[3]',
-'mod8_DIO_DIOL_Placeholder5': 'mod8_DIO_DIOL[4]',
-'Flowmeter_shed1_cold': 'mod8_DIO_DIOL[5]',
-'Request_shed1': 'mod8_DIO_DIOL[6]',
-'Flowmeter_shed1_hot': 'mod8_DIO_DIOL[7]',
-'mod8_DIO_DIOL_Placeholder9': 'mod8_DIO_DIOL[8]',
-'mod8_DIO_DIOL_Placeholder10': 'mod8_DIO_DIOL[9]'
+'Flowmeter_shed3_hot': 'mod5_DIO_DIOL[0]',
+'Request_shed3': 'mod5_DIO_DIOL[1]',
+'Flowmeter_shed3_cold': 'mod5_DIO_DIOL[2]',
+'mod5_DIO_DIOL_Placeholder9': 'mod5_DIO_DIOL[3]]',
+'mod5_DIO_DIOL_Placeholder10': 'mod5_DIO_DIOL[4]',
+'Flowmeter_shed2_hot': 'mod6_DIO_DIOL[0]',
+'Request_shed2': 'mod6_DIO_DIOL[1]',
+'Flowmeter_shed2_cold': 'mod6_DIO_DIOL[2]',
+'mod6_DIO_DIOL_Placeholder9': 'mod6_DIO_DIOL[3]',
+'mod6_DIO_DIOL_Placeholder10': 'mod6_DIO_DIOL[4]',
+'Flowmeter_main_hot': 'mod7_DIO_DIOL[0]',
+'Exhaust_airflow_confirmed': 'mod7_DIO_DIOL[1]',
+'Flowmeter_main_cold': 'mod7_DIO_DIOL[2]',
+'mod7_DIO_DIOL_Placeholder9': 'mod7_DIO_DIOL[3]',
+'mod7_DIO_DIOL_Placeholder10': 'mod7_DIO_DIOL[4]',
+'Flowmeter_shed1_cold': 'mod8_DIO_DIOL[0]',
+'Request_shed1': 'mod8_DIO_DIOL[1]',
+'Flowmeter_shed1_hot': 'mod8_DIO_DIOL[2]',
+'mod8_DIO_DIOL_Placeholder9': 'mod8_DIO_DIOL[3]',
+'mod8_DIO_DIOL_Placeholder10': 'mod8_DIO_DIOL[4]'
+}
+channel_map_outputs = {
+    'Valve_shed3_hot': 'mod3_AO_VO[0]',
+    'Valve_shed3_cold': 'mod3_AO_VO[1]',
+    'Valve_shed2_hot': 'mod3_AO_VO[2]',
+    'Valve_shed2_cold': 'mod3_AO_VO[3]',
+    'Valve_main_hot': 'mod3_AO_VO[4]',
+    'Valve_main_cold': 'mod3_AO_VO[5]',
+    'Valve_shed1_cold': 'mod3_AO_VO[6]',
+    'Valve_shed1_hot': 'mod3_AO_VO[7]',
+    'Pump_shed3_hot': 'mod5_DIO_DIOL[0]',
+    'Pump_shed3_cold': 'mod5_DIO_DIOL[1]',
+    'Pump_shed2_hot': 'mod5_DIO_DIOL[2]',
+    'Pump_shed2_cold': 'mod5_DIO_DIOL[3]',
+    'Pump_main_hot': 'mod5_DIO_DIOL[4]',
+    'Pump_main_cold': 'mod6_DIO_DIOL[0]',
+    'Pump_shed1_cold': 'mod6_DIO_DIOL[1]',
+    'Pump_shed1_hot': 'mod6_DIO_DIOL[2]',
+    'Door_shed2_seal': 'mod6_DIO_DIOL[3]',
+    'Exhaust_shed2': 'mod6_DIO_DIOL[4]',
+    'Request_good_shed1': 'mod7_DIO_DIOL[0]',
+    'Request_good_shed2': 'mod7_DIO_DIOL[1]',
+    'Request_good_shed3': 'mod7_DIO_DIOL[2]',
+    'Door_shed3_seal': 'mod7_DIO_DIOL[3]',
+    'Exhaust_shed3': 'mod7_DIO_DIOL[4]',
+    'Exhaust_damper': 'mod8_DIO_DIOL[0]',
+    'Exhaust_fan': 'mod8_DIO_DIOL[1]',
+    'mod8_DIO_DIOL_Placeholder3': 'mod8_DIO_DIOL[2]',
+    'mod8_DIO_DIOL_Placeholder4': 'mod8_DIO_DIOL[3]',
+    'mod8_DIO_DIOL_Placeholder5': 'mod8_DIO_DIOL[4]',    
 }
 #-----Initialize daq and assign modules to physical variables----- Could be a function that's called only if needed.
 
@@ -138,7 +141,8 @@ def read_modules(modules): #accepts dict of module name: module instance and ret
             data[key] = modules[key].read_data_counts(0, number_of_channels=modules[key].get_number_of_channels())
     return data
 
-def read(channel): #accepts channel name, returns dict of {channel name: value} and checks for enabled counters.
+def read(channel, channel_type): #accepts channel name, returns dict of {channel name: value} and checks for enabled counters.
+    channel_map = eval("channel_map_" + channel_type)
     if hasattr(eval(channel_map[channel][:-3]), 'read_special_function_2_pulse_frequency_counter_with_debounce'):    #check if module configured for DIOL
         if channel_map[channel][-2] == '0':     #check if channel is counter input
             return eval(channel_map[channel][:-3]).read_special_function_2_pulse_frequency_counter_with_debounce(timer=0)['Frequency']
@@ -151,21 +155,36 @@ def read(channel): #accepts channel name, returns dict of {channel name: value} 
             return eval(channel_map[channel][:-3]).read_data_counts(int(channel[-2]), number_of_channels=1)[0]
         return eval(channel_map[channel])
 
+def read_modbus_register(channel): #used to read the state of DIO outputs.
+    module = str(channel_map_outputs[channel])[:-3]
+    channel_number = int(str(channel_map_outputs[channel])[-2])+1000
+    register_value = eval(module).read_register(channel_number)
+    return register_value
+
 def read_channels(channels): #accepts a list of requested channel names: eg ['T_shed2_cold': 'T_shed2_hot'] and returns dict of {channel name: values}
     data = {}
     for channel in channels:
-        if channel in channel_map.keys():
-            data[channel] = read(channel)
+        if channel in channel_map_inputs.keys():            
+            data[channel] = read(channel, "inputs")
+        elif channel in channel_map_outputs.keys():
+            if 'DIOL' in channel_map_outputs[channel]:
+                data[channel] = read_modbus_register(channel)
+            else:
+                data[channel] = read(channel, "outputs")
         else:
             data[channel] = 'chan_name_error'
+    # call scale/calibration function and correct values before returning
     return data
-     
+
 def write_channels(channels):    # accepts a dict of the engineering channels to write to and the desired values. Gets the physical channel from the map and writes to the physical channel.    for key, value in channels, values:
     err = False
-    for key in channels:
-        if key in channel_map.keys():
-            print(key, channel_map[key], channels[key])
-            channel_map[key] = channels[key]
+    for key in channels.keys():
+        if key in channel_map_outputs.keys():
+            if channels[key] == 'true':
+                value = 0
+            else:
+                value = 1
+            channel_map_outputs[key] = value
         else:
             err = True
     return err
@@ -174,10 +193,14 @@ def write_channels(channels):    # accepts a dict of the engineering channels to
 
 #channels = ['T_shed3_l', 'Door_shed2_seal', 'Pump_main_cold']
 #channels = ['Pump_main_hot', 'T_main_hot', 'Valve_main_hot', 'DIV20_Placeholder_11', 'Pump_main_cold', 'T_main_cold', 'Valve_main_cold']
+#module = {'mod6_DIO_DIOL': mod6_DIO_DIOL}
 
 #try:
 #    while True:
-#        print(read_channels(channels))
+#        channel = ['Pump_main_hot', 'Flowmeter_main_hot', 'T_main_hot', 'Valve_main_hot', 'Pump_main_cold', 'Flowmeter_main_cold', 'T_main_cold', 'Valve_main_cold']
+#        print(channel_map_outputs[channel[0]])
+#        value = read_channels(channel)
+#        print(channel, value)
 #        time.sleep(1)
 #except KeyboardInterrupt:
 #    pass

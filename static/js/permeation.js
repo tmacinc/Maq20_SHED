@@ -3,7 +3,7 @@
 //Get current control values from server and update defaults. Not needed?
 function update_page_data(allElements){
     var vardict = {};
-//    console.log(allElements);
+    console.log(allElements);
     for (var index = 0; index < allElements.length; index++){
         vardict[allElements[index]] = allElements[index];
     };
@@ -122,7 +122,13 @@ function changeBackgroundColor(input, value){
     function initialize_inputs(Inputs){
         var inputs = {}
         for (var i = 0; i < Inputs.length; i++){
-        inputs[Inputs[i]] = $("#input_" + Inputs[i]).val()
+            var type = $("#input_" + Inputs[i]).attr('type');
+            if (type == 'checkbox'){
+                inputs[Inputs[i]] = $("#input_" + Inputs[i]).prop('checked');
+            }
+            else {
+            inputs[Inputs[i]] = $("#input_" + Inputs[i]).val()
+            }
         }
         return inputs
     }
@@ -146,7 +152,7 @@ $(document).ready(function(){
 
 
 // Set JQuery refresh interval.
-   setInterval(update_page_data, 1000, variables.Outputs)
+  setInterval(update_page_data, 1000, variables.Outputs)
 
 // monitor inputs for changes, trying to use variables.Inputs to automatically work with changing html
 
@@ -159,18 +165,25 @@ $(document).ready(function(){
         var input_changed = {}
         for (var i = 0; i < variables.Inputs.length; i++){
             var input = variables.Inputs[i];
-            inputs_current[input] = $("#input_" + input).val()
+            var type = $("#input_" + input).attr('type');
+            if (type == 'checkbox'){
+                inputs_current[input] = $("#input_" + input).prop('checked')
+            }
+            else {
+                inputs_current[input] = $("#input_" + input).val()
+            }
+//            console.log(inputs_current[input]);
             if (inputs_current[input] != inputs_prev[input]){
 //                console.log("Input changed is: " + input);
 //                console.log("current value: " + inputs_current[input]);
 //                console.log("Previous value: " + inputs_prev[input]);
                 inputs_prev[input] = inputs_current[input];
                 input_changed[input] = inputs_current[input];
-                console.log(input_changed)
+//                console.log(input_changed)
             }
         }
         senddata(input_changed)    // send new value to server
-//        console.log(inputs_current);
+//        console.log(input_changed);
     })
 
 })
