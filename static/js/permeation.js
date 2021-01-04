@@ -1,13 +1,13 @@
 
 
-//Get current control values from server and update defaults.
+//Get current control values from server and update defaults. Not needed?
 function update_page_data(allElements){
     var vardict = {};
-    console.log(allElements);
+//    console.log(allElements);
     for (var index = 0; index < allElements.length; index++){
         vardict[allElements[index]] = allElements[index];
     };
-    console.log(vardict);
+//    console.log(vardict);
     $.ajax({
         url: $SCRIPT_ROOT + "/_update_page_data",
         type: "GET",
@@ -51,6 +51,18 @@ function fetchdata(){
     })
 }
 
+//Ajax send changed input to server
+function senddata(data){
+    $.ajax({
+        type: "GET",
+        url: "_set_control",
+        data: data,
+        success: function(response){
+            console.log(response)
+        },
+    })
+}
+
 // Change the background color based on the temperature value
 function changeBackgroundColor(input, value){
     $(input).removeClass();
@@ -83,9 +95,10 @@ function changeBackgroundColor(input, value){
                 outputs.push(variable);
             }}
         var variables = {"Inputs": inputs, "Outputs": outputs}
-//        console.log(variables);
         return variables;
       }
+
+// create string of input names to watch in .change function
 
     function generate_input_string(Inputs){
         var input_string = "";
@@ -104,12 +117,19 @@ function changeBackgroundColor(input, value){
         return input_string
     }
 
-//    function initialize_inputs(Inputs){
+// get initial list of inputs and store their values
 
-//    }
+    function initialize_inputs(Inputs){
+        var inputs = {}
+        for (var i = 0; i < Inputs.length; i++){
+        inputs[Inputs[i]] = $("#input_" + Inputs[i]).val()
+        }
+        return inputs
+    }
 
 //Runs once the document is ready and published in the browser.
 $(document).ready(function(){
+
 // update navbar with indicator of current page (currently color, can increase font etc.)
     $("[href]").each(function() {
         if (this.href == window.location.href) {
@@ -117,28 +137,40 @@ $(document).ready(function(){
         }
     });
 
-// get list of variabels used by page (tags which have and id)
+// get list of variables used by page (tags which have and id="")
 
     var variables = get_variables()
-
+    
 // call the initialize page data function
     
 
 
-// call JQuery to refresh page data at interval.
- //   setInterval(update_page_data, 1000, variables.Outputs)
+// Set JQuery refresh interval.
+   setInterval(update_page_data, 1000, variables.Outputs)
 
-// monitor inputs for changes, trying to use variables.Inputs.input_html to automatically work with changing html
-    var input_string = generate_input_string(variables.Inputs)
-//    var input_values = initialize_inputs(variables.Inputs)
+// monitor inputs for changes, trying to use variables.Inputs to automatically work with changing html
+
+    var input_string = generate_input_string(variables.Inputs) //generate list of current inputs
+    var inputs_prev = initialize_inputs(variables.Inputs)   //initialize list of current input values for tracking which input has changed
+    
 
     $(input_string).on("change", function(){
-        var inputs = {}
+        var inputs_current = {}
+        var input_changed = {}
         for (var i = 0; i < variables.Inputs.length; i++){
-        inputs[variables.Inputs[i]] = $("#input_" + variables.Inputs[i]).val()
-        console.log(inputs);
-    }
-// need a way to determine which input has changed to call the correct function, could send all inputs currently
+            var input = variables.Inputs[i];
+            inputs_current[input] = $("#input_" + input).val()
+            if (inputs_current[input] != inputs_prev[input]){
+//                console.log("Input changed is: " + input);
+//                console.log("current value: " + inputs_current[input]);
+//                console.log("Previous value: " + inputs_prev[input]);
+                inputs_prev[input] = inputs_current[input];
+                input_changed[input] = inputs_current[input];
+                console.log(input_changed)
+            }
+        }
+        senddata(input_changed)    // send new value to server
+//        console.log(inputs_current);
     })
 
 })

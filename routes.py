@@ -27,6 +27,16 @@ def permeation_initialize():
     print(data)
     return jsonify(ajax_data=data)
 
+@app.route('/_set_control') #Accepts requested control variable from user and sends value to controller.
+def set_control():
+    msg = request.args.to_dict()
+    print(msg)
+    channels = list(request.args.to_dict().keys())
+    channel_name = channels[0]
+    print("Received request to update setting: " + channel_name + " to new value: " + msg[channel_name])
+    daq.write_channels(msg)
+    return jsonify(ajax_response="Received channel -> value: " + str(channel_name) + " -> " + str(msg[channel_name]))
+
 @app.route('/_ffffffupdate_page_data')
 def update_page_data():
     print(active_variables)
