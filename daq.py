@@ -129,7 +129,7 @@ mod7_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(tim
 #mod8_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
 #mod8_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
 
-#-----Map physical channels to variables-----
+#----- Functions for accessing maq20 api -----
 
 def read_modules(modules): #accepts dict of module name: module instance and returns dict of module name: list of channel values
     data = {}
@@ -143,17 +143,18 @@ def read_modules(modules): #accepts dict of module name: module instance and ret
 
 def read(channel, channel_type): #accepts channel name, returns dict of {channel name: value} and checks for enabled counters.
     channel_map = eval("channel_map_" + channel_type)
-    if hasattr(eval(channel_map[channel][:-3]), 'read_special_function_2_pulse_frequency_counter_with_debounce'):    #check if module configured for DIOL
-        if channel_map[channel][-2] == '0':     #check if channel is counter input
-            return eval(channel_map[channel][:-3]).read_special_function_2_pulse_frequency_counter_with_debounce(timer=0)['Frequency']
-        elif channel_map[channel][-2] == '2':
-            return eval(channel_map[channel][:-3]).read_special_function_2_pulse_frequency_counter_with_debounce(timer=1)['Frequency']
+    if hasattr(eval(str(channel_map[channel])[:-3]), 'read_special_function_2_pulse_frequency_counter_with_debounce'):    #check if module configured for DIOL
+        if str(channel_map[channel])[-2] == '0':     #check if channel is counter input
+            return eval(str(channel_map[channel])[:-3]).read_special_function_2_pulse_frequency_counter_with_debounce(timer=0)['Frequency']
+        elif str(channel_map[channel])[-2] == '2':
+            return eval(str(channel_map[channel])[:-3]).read_special_function_2_pulse_frequency_counter_with_debounce(timer=1)['Frequency']
         else:
-            return eval(channel_map[channel])           
+            return eval(str(channel_map[channel]))           
     else:
-        if 'DIV20' in channel_map[channel]:
-            return eval(channel_map[channel][:-3]).read_data_counts(int(channel[-2]), number_of_channels=1)[0]
-        return eval(channel_map[channel])
+        if 'DIV20' in str(channel_map[channel]):
+            return eval(str(channel_map[channel])[:-3]).read_data_counts(int(channel[-2]), number_of_channels=1)[0]
+        else:
+            return eval(str(channel_map[channel]))
 
 def read_modbus_register(channel): #used to read the state of DIO outputs.
     module = str(channel_map_outputs[channel])[:-3]
@@ -164,10 +165,10 @@ def read_modbus_register(channel): #used to read the state of DIO outputs.
 def read_channels(channels): #accepts a list of requested channel names: eg ['T_shed2_cold': 'T_shed2_hot'] and returns dict of {channel name: values}
     data = {}
     for channel in channels:
-        if channel in channel_map_inputs.keys():            
+        if channel in channel_map_inputs.keys(): 
             data[channel] = read(channel, "inputs")
         elif channel in channel_map_outputs.keys():
-            if 'DIOL' in channel_map_outputs[channel]:
+            if 'DIOL' in str(channel_map_outputs[channel]):
                 data[channel] = read_modbus_register(channel)
             else:
                 data[channel] = read(channel, "outputs")
@@ -177,17 +178,16 @@ def read_channels(channels): #accepts a list of requested channel names: eg ['T_
     return data
 
 def write_channels(channels):    # accepts a dict of the engineering channels to write to and the desired values. Gets the physical channel from the map and writes to the physical channel.    for key, value in channels, values:
-    err = False
     for key in channels.keys():
         if key in channel_map_outputs.keys():
             if channels[key] == 'true':
                 value = 0
             else:
                 value = 1
-            channel_map_outputs[key] = value
+            channel_to_write = str(channel_map_outputs[key])
+            exec(channel_to_write + '=' + str(value))
         else:
-            err = True
-    return err
+            return "err"
 
 #-----Function Testing-----
 
@@ -197,10 +197,13 @@ def write_channels(channels):    # accepts a dict of the engineering channels to
 
 #try:
 #    while True:
-#        channel = ['Pump_main_hot', 'Flowmeter_main_hot', 'T_main_hot', 'Valve_main_hot', 'Pump_main_cold', 'Flowmeter_main_cold', 'T_main_cold', 'Valve_main_cold']
-#        print(channel_map_outputs[channel[0]])
-#        value = read_channels(channel)
-#        print(channel, value)
+#        channels = {'Pump_main_hot': 1}
+#        for channel in channels.keys():
+#            value = 1
+#            channel_to_write = str(channel_map_outputs[channel])
+#            print(channel, value, eval(channel_to_write))
+#            exec(channel_to_write + '=' + str(value))
+#            print(channel_to_write)
 #        time.sleep(1)
 #except KeyboardInterrupt:
 #    pass

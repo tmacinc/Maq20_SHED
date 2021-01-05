@@ -22,7 +22,7 @@ def update_page_data():
 #        channels.append(channel)
     #    else:
     #        pass
-    print(channels_requested)
+#    print(channels_requested)
     data = daq.read_channels(channels_requested)
     print(data)
     return jsonify(ajax_data=data)
