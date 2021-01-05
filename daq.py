@@ -94,7 +94,22 @@ channel_map_outputs = {
     'mod8_DIO_DIOL_Placeholder4': 'mod8_DIO_DIOL[3]',
     'mod8_DIO_DIOL_Placeholder5': 'mod8_DIO_DIOL[4]',    
 }
-#-----Initialize daq and assign modules to physical variables----- Could be a function that's called only if needed.
+
+#-----Define special channel types-----
+
+channel_configs = {
+    "Exhaust_damper": "frequency_generator",
+    'Flowmeter_shed1_hot': 'counter',
+    'Flowmeter_shed1_cold': 'counter',
+    'Flowmeter_shed2_hot': 'counter',
+    'Flowmeter_shed2_cold': 'counter',
+    'Flowmeter_shed3_hot': 'counter',
+    'Flowmeter_shed3_cold': 'counter',
+    'Flowmeter_main_hot': 'counter',
+    'Flowmeter_main_cold': 'counter',
+}
+
+#-----Initialize daq and assign modules to physical variables----- Could be automated to scan daq and return the module types, then name accordingly.
 
 daq = MAQ20(ip_address="192.168.1.10", port=502)
 module_names = ['mod1_AI_MVDN', 'mod2_AI_TTC', 'mod3_AO_VO', 'mod4_DI_DIV20', 'mod5_DIO_DIOL', 'mod6_DIO_DIOL', 'mod7_DIO_DIOL', 'mod8_DIO_DIOL']
@@ -111,30 +126,67 @@ mod8_DIO_DIOL = daq[8]
 module_instances = [mod1_AI_MVDN, mod2_AI_TTC, mod3_AO_VO, mod4_DI_DIV20, mod5_DIO_DIOL, mod6_DIO_DIOL, mod7_DIO_DIOL, mod8_DIO_DIOL]
 modules = dict(zip(module_names, module_instances))
 
-#-----Initialize Counters on DIOL moduels----
+#-----Initialize Special Functions on DIOL modules----
 
-mod5_DIO_DIOL = DIOL(maq20_module=mod5_DIO_DIOL)
+modules_special = []
+for channel in channel_configs: 
+    if channel in channel_map_inputs: #check if input
+        if channel_configs[channel] == "counter": #case for counter with debounce
+            module = str(channel_map_inputs[channel])[:-3]
+            if str(channel_map_inputs[channel])[-2] == '0': #case for timer 0 on input 0
+                timer = 0
+            elif str(channel_map_inputs[channel])[-2] == '2': #case for time 1 on input 2
+                timer = 1
+            else:
+                print("Channel name error, channel cannot be used in special function")
+            if module in modules_special:    #check if module already instantiated as DIOL
+                eval(module).write_special_function_2_pulse_frequency_counter_with_debounce(timer=timer, internal_trigger=1)
+            else:
+                modules_special.append(module)
+                exec(module + "=" + "DIOL(maq20_module=" + module + ")")
+                #eval(module) = DIOL(maq20_module=eval(module))
+                eval(module).write_special_function_2_pulse_frequency_counter_with_debounce(timer=timer, internal_trigger=1)
+#            print(dir(eval(module)))
+        else:
+            pass
+    else:
+        if channel_configs[channel] == "frequency_generator": #case for frequency generator
+            module = str(channel_map_outputs[channel])[:-3]
+            if str(channel_map_outputs[channel])[-2] == '0': #case for timer 0 on input 0
+                timer = 0
+            elif str(channel_map_outputs[channel])[-2] == '2': #case for time 1 on input 2
+                timer = 1
+            else:
+                print("Channel name error, channel cannot be used in special function")
+            if module in modules_special:
+                eval(module).write_special_function_5_frequency_generator(timer=timer, frequency=0)
+            else:
+                modules_special.append(module)
+                exec(module + "=" + "DIOL(maq20_module=" + module + ")")
+                eval(module).write_special_function_5_frequency_generator(timer=timer, frequency=0)
+        else:
+            pass
+'''
+#mod5_DIO_DIOL = DIOL(maq20_module=mod5_DIO_DIOL)
 mod6_DIO_DIOL = DIOL(maq20_module=mod6_DIO_DIOL)
 mod7_DIO_DIOL = DIOL(maq20_module=mod7_DIO_DIOL)
-mod8_DIO_DIOL = DIOL(maq20_module=mod8_DIO_DIOL)
+#mod8_DIO_DIOL = DIOL(maq20_module=mod8_DIO_DIOL)
 
-mod8_DIO_DIOL.write_special_function_5_frequency_generator(timer=0, frequency=10) # frequency generator 500 Hz
-
-mod5_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
-mod5_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
+#mod8_DIO_DIOL.write_special_function_5_frequency_generator(timer=0, frequency=10) # frequency generator 500 Hz
+#mod5_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
+#mod5_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
 mod6_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
 mod6_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
 mod7_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
 mod7_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
 #mod8_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
 #mod8_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
-
+'''
 #----- Functions for accessing maq20 api -----
 
 def read_modules(modules): #accepts dict of module name: module instance and returns dict of module name: list of channel values
     data = {}
     for key in modules:
-        print(key)
         if 'VDN' in key or 'TTC' in key or 'DIO' in key or 'AO' in key:
             data[key] = modules[key].read_data(0, number_of_channels=modules[key].get_number_of_channels())
         elif 'DI' in key:
@@ -169,7 +221,12 @@ def read_channels(channels): #accepts a list of requested channel names: eg ['T_
             data[channel] = read(channel, "inputs")
         elif channel in channel_map_outputs.keys():
             if 'DIOL' in str(channel_map_outputs[channel]):
-                data[channel] = read_modbus_register(channel)
+                data_cur = read_modbus_register(channel)
+                if data_cur == 1: #invert logic so 0 = 1, 1 = 0
+                    data[channel] = 0
+                else:
+                    data[channel] = 1
+                #data[channel] = read_modbus_register(channel)
             else:
                 data[channel] = read(channel, "outputs")
         else:
@@ -179,15 +236,25 @@ def read_channels(channels): #accepts a list of requested channel names: eg ['T_
 
 def write_channels(channels):    # accepts a dict of the engineering channels to write to and the desired values. Gets the physical channel from the map and writes to the physical channel.    for key, value in channels, values:
     for key in channels.keys():
-        if key in channel_map_outputs.keys():
-            if channels[key] == 'true':
-                value = 0
+        if key in channel_configs.keys(): # check for special function
+            if channel_configs[key] == "frequency_generator":
+                module = str(channel_map_outputs[key])[:-3]
+                if str(channel_map_outputs[key])[-2] == '0': #case for timer 0 on input 0
+                    timer = 0
+                elif str(channel_map_outputs[key])[-2] == '2': #case for time 1 on input 2
+                    timer = 1
+                frequency = str(channels[key])
+                exec(module + ".write_special_function_5_frequency_generator(timer=" + str(timer) + ", frequency=" + frequency + ")")
+        else: # regular output (boolean) add other function with elif statements
+            if key in channel_map_outputs.keys():
+                if channels[key] == 'true' or channels[key] == 1:
+                    value = 0
+                else:
+                    value = 1
+                channel_to_write = str(channel_map_outputs[key])
+                exec(channel_to_write + '=' + str(value))
             else:
-                value = 1
-            channel_to_write = str(channel_map_outputs[key])
-            exec(channel_to_write + '=' + str(value))
-        else:
-            return "err"
+                pass
 
 #-----Function Testing-----
 
@@ -197,13 +264,9 @@ def write_channels(channels):    # accepts a dict of the engineering channels to
 
 #try:
 #    while True:
-#        channels = {'Pump_main_hot': 1}
-#        for channel in channels.keys():
-#            value = 1
-#            channel_to_write = str(channel_map_outputs[channel])
-#            print(channel, value, eval(channel_to_write))
-#            exec(channel_to_write + '=' + str(value))
-#            print(channel_to_write)
+#        channels = {'Exhaust_damper': '65'}
+#        write_channels(channels)
+#        print(channels)
 #        time.sleep(1)
 #except KeyboardInterrupt:
 #    pass

@@ -15,14 +15,7 @@ def permeation():
 
 @app.route('/_update_page_data') #Accepts requested variables when page is loaded and sends current values to page. Could also be used to keep track of what is needed in the back end.
 def update_page_data():
-#    channels = []
     channels_requested = list(request.args.to_dict().keys())
-#    for channel in channels_requested:
-    #    if channel in daq.channel_map:
-#        channels.append(channel)
-    #    else:
-    #        pass
-#    print(channels_requested)
     data = daq.read_channels(channels_requested)
     print(data)
     return jsonify(ajax_data=data)
@@ -30,7 +23,6 @@ def update_page_data():
 @app.route('/_set_control') #Accepts requested control variable from user and sends value to controller.
 def set_control():
     msg = request.args.to_dict()
-#    print(msg)
     channels = list(request.args.to_dict().keys())
     channel_name = channels[0]
     print("Received request to update setting: " + channel_name + " to new value: " + msg[channel_name])
