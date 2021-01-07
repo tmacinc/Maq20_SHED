@@ -111,9 +111,20 @@ channel_configs = {
 
 #-----Initialize daq and assign modules to physical variables----- Could be automated to scan daq and return the module types, then name accordingly.
 
+#def initialize_daq():
+#    global daq 
 daq = MAQ20(ip_address="192.168.1.10", port=502)
 module_names = ['mod1_AI_MVDN', 'mod2_AI_TTC', 'mod3_AO_VO', 'mod4_DI_DIV20', 'mod5_DIO_DIOL', 'mod6_DIO_DIOL', 'mod7_DIO_DIOL', 'mod8_DIO_DIOL']
-
+"""
+global mod1_AI_MVDN
+global mod2_AI_TTC
+global mod3_AO_VO
+global mod4_DI_DIV20 
+global mod5_DIO_DIOL 
+global mod6_DIO_DIOL
+global mod7_DIO_DIOL
+global mod8_DIO_DIOL
+"""
 mod1_AI_MVDN = daq[1]
 mod2_AI_TTC = daq[2]
 mod3_AO_VO = daq[3]
@@ -124,10 +135,9 @@ mod7_DIO_DIOL = daq[7]
 mod8_DIO_DIOL = daq[8]
 
 module_instances = [mod1_AI_MVDN, mod2_AI_TTC, mod3_AO_VO, mod4_DI_DIV20, mod5_DIO_DIOL, mod6_DIO_DIOL, mod7_DIO_DIOL, mod8_DIO_DIOL]
+#    global modules 
 modules = dict(zip(module_names, module_instances))
-
 #-----Initialize Special Functions on DIOL modules----
-
 modules_special = []
 for channel in channel_configs: 
     if channel in channel_map_inputs: #check if input
@@ -255,6 +265,8 @@ def write_channels(channels):    # accepts a dict of the engineering channels to
                 exec(channel_to_write + '=' + str(value))
             else:
                 pass
+
+#initialize_daq()
 
 #-----Function Testing-----
 

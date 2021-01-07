@@ -17,7 +17,6 @@ def permeation():
 def update_page_data():
     channels_requested = list(request.args.to_dict().keys())
     data = daq.read_channels(channels_requested)
-    print(data)
     return jsonify(ajax_data=data)
 
 @app.route('/_set_control') #Accepts requested control variable from user and sends value to controller.
