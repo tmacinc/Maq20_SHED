@@ -83,3 +83,7 @@ div {
 .bold {
   font-weight: Bold;
 }
+
+.white_background {
+  background-color: white;
+}

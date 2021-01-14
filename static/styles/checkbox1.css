@@ -1,5 +1,5 @@
 .inputGroup {
-    background-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 0, 0, 0.226);
     display: block;
     margin: 10px 0;
     position: relative;
@@ -30,7 +30,7 @@
     opacity: 0;
     z-index: -1;
   }
-  .inputGroup label:after {
+  /*.inputGroup label:after {
     width: 32px;
     height: 32px;
     content: "";
@@ -47,7 +47,7 @@
     transform: translateY(-50%);
     cursor: pointer;
     transition: all 200ms ease-in;
-  }
+  }*/
   .inputGroup input:checked ~ label {
     color: rgb(255, 255, 255);
   }
