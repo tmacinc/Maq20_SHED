@@ -12,5 +12,4 @@ Get the modified MAQ20 api from https://github.com/tmacinc/MAQ20_API_Python.git 
     Or copy the files from dependecies/Updates to maq20 api after installation to update the code.
 
 
-Run project for dev purposes from venv terminal using flask run
-
+Run project using python app.py
