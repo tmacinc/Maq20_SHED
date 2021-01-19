@@ -87,3 +87,15 @@ div {
 .white_background {
   background-color: white;
 }
+
+.range_normal {
+  background-color: hsla(0, 100%, 50%, 0);
+}
+
+.range_high {
+  background-color: hsla(0, 100%, 50%, 1);
+}
+
+.range_low {
+  background-color: hsla(220, 100%, 50%, 1);
+}
