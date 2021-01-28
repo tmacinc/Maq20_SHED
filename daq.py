@@ -113,7 +113,7 @@ channel_configs = {
 
 #def initialize_daq():
 #    global daq 
-daq = MAQ20(ip_address="192.168.1.10", port=502)
+daq = MAQ20(ip_address="192.168.0.10", port=502)
 module_names = ['mod1_AI_MVDN', 'mod2_AI_TTC', 'mod3_AO_VO', 'mod4_DI_DIV20', 'mod5_DIO_DIOL', 'mod6_DIO_DIOL', 'mod7_DIO_DIOL', 'mod8_DIO_DIOL']
 """
 global mod1_AI_MVDN
