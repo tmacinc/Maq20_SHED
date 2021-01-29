@@ -1,6 +1,7 @@
 
 var gauge_vars = ["Flowmeter_shed3_hot", "T_shed2_cold"]
-
+google.charts.load('current', {'packages':['gauge']});
+google.charts.setOnLoadCallback(documentReady);
 //Get current values from server and update display. Activated at interval as set in document.ready function
 function update_page_data(allElements, data, chart, options){
     var vardict = {};
@@ -105,8 +106,7 @@ function changeBackgroundColor(input, value){
         return input_values
     }
 
-google.charts.load('current', {'packages':['gauge']});
-google.charts.setOnLoadCallback(documentReady);
+
 
 //Runs once the document is ready and published in the browser.
 //$(document).ready(function(){
