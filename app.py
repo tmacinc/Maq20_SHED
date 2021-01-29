@@ -10,6 +10,8 @@ app.config['DEBUG'] = True
 
 socketio = SocketIO(app)
 
+daq = daq.dataforth(daq.settings)
+
 @app.route('/')
 def index():
     return render_template('permeation.html')
