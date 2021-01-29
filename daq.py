@@ -170,22 +170,7 @@ class dataforth():
                         eval('self.' + module).write_special_function_5_frequency_generator(timer=timer, frequency=0)
                 else:
                     pass
-        '''
-        #mod5_DIO_DIOL = DIOL(maq20_module=mod5_DIO_DIOL)
-        mod6_DIO_DIOL = DIOL(maq20_module=mod6_DIO_DIOL)
-        mod7_DIO_DIOL = DIOL(maq20_module=mod7_DIO_DIOL)
-        #mod8_DIO_DIOL = DIOL(maq20_module=mod8_DIO_DIOL)
 
-        #mod8_DIO_DIOL.write_special_function_5_frequency_generator(timer=0, frequency=10) # frequency generator 500 Hz
-        #mod5_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
-        #mod5_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
-        mod6_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
-        mod6_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
-        mod7_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
-        mod7_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
-        #mod8_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=0, internal_trigger=1)
-        #mod8_DIO_DIOL.write_special_function_2_pulse_frequency_counter_with_debounce(timer=1, internal_trigger=1)
-        '''
         #----- Functions for accessing maq20 api -----
 
     def read_modules(self, modules): #accepts dict of module name: module instance and returns dict of module name: list of channel values
@@ -269,13 +254,10 @@ class dataforth():
                 else:
                     pass
 
-#initialize_daq()
 
 #-----Function Testing-----
 
-#channels = ['T_shed3_l', 'Door_shed2_seal', 'Pump_main_cold']
-#channels = ['Pump_main_hot', 'T_main_hot', 'Valve_main_hot', 'DIV20_Placeholder_11', 'Pump_main_cold', 'T_main_cold', 'Valve_main_cold']
-#module = {'mod6_DIO_DIOL': mod6_DIO_DIOL}
+
 '''
 try:
     daq = dataforth(settings)
