@@ -13,10 +13,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
 
-with open('config.txt') as json_file:
+#----------------- Load settings from config file ---------------------------------------------------------------------
+
+with open('config.json') as json_file:
     settings = json.load(json_file)
 #socketio = SocketIO(app)
 daq = daq.dataforth(settings)
+
+#----------------- Build variables dictionary - Can also have scales, eng units etc -----------------------------------
 
 variables = {}
 variables["daq_channels"] = []
@@ -65,18 +69,18 @@ def maq20_fetch_data():
     data = daq.read_modules(daq.modules)
     return jsonify(ajax_data=data)
 
-#--------------------- Regular functions - Can be used by routes, background thread etc. -----------------------
+#--------------------- Regular functions - Can be used by routes, background thread etc. ------------------------------
 
 def read_daq(): # get current channel values from list in variables['vars_raw']
     channels = variables['daq_channels']
     data = daq.read_channels(channels)
     update_variables(data)
 
-def update_variables(data):
+def update_variables(data): # updates the variables dictionary with new values
     for key in data.keys():
         variables['vars_raw'][key] = data[key]
 
-def background_tasks(queue=Queue): # Used for managing daq, control functions etc. Will run without client connected.
+def background_tasks(queue=Queue): # Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
     print("Background thread started")
     t_now = datetime.now()
     t_next = t_now + timedelta(seconds=1)
@@ -93,6 +97,10 @@ def background_tasks(queue=Queue): # Used for managing daq, control functions et
         t_now = datetime.now()
         read_daq()
 
+
+#--------------------- Initialize background thread and start flask app ------------------------------------------------
+
+
 queue = Queue()
 background = Thread(target=background_tasks, args=(queue,))
 background.daemon = True
@@ -100,5 +108,5 @@ background.start()
 
 
 if __name__ == '__main__':
-    #socketio.run(app, host='0.0.0.0') #used for eventlet with socketio
-    serve(app, port=5000)
+    #socketio.run(app, host='0.0.0.0')  # used for eventlet with socketio
+    serve(app, port=5000)               # used for waitress, without sockets
