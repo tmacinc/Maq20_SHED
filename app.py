@@ -79,7 +79,6 @@ def update_variables(data):
 def background_tasks(queue=Queue): # Used for managing daq, control functions etc. Will run without client connected.
     print("Background thread started")
     t_now = datetime.now()
-    t_start = t_now
     t_next = t_now + timedelta(seconds=1)
     while True:
         while t_now < t_next:                               # runs at higher frequency
