@@ -124,9 +124,9 @@ class dataforth():
         self.mod7_DIO_DIOL = self.daq[7]
         self.mod8_DIO_DIOL = self.daq[8]
 
-        #self.module_instances = [mod1_AI_MVDN, mod2_AI_TTC, mod3_AO_VO, mod4_DI_DIV20, mod5_DIO_DIOL, mod6_DIO_DIOL, mod7_DIO_DIOL, mod8_DIO_DIOL]
+        self.module_instances = [self.mod1_AI_MVDN, self.mod2_AI_TTC, self.mod3_AO_VO, self.mod4_DI_DIV20, self.mod5_DIO_DIOL, self.mod6_DIO_DIOL, self.mod7_DIO_DIOL, self.mod8_DIO_DIOL]
         #    global modules 
-        #self.modules = dict(zip(module_names, module_instances))
+        self.modules = dict(zip(self.module_names, self.module_instances))
         #-----Initialize Special Functions on DIOL modules----
         self.modules_special = []
         for channel in self.channel_configs: 
