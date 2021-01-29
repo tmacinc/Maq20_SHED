@@ -3,6 +3,8 @@ from maq20.modules.diol import DIOL
 from maq20 import utilities as utils
 import time
 
+
+#-----Build maps for channels. Engineering variable to physical channel----- Could be called from config file.
 settings = {}
 settings['host'] = '192.168.0.10'
 settings['port'] = '502'
@@ -103,7 +105,7 @@ settings['channel_configs']  = {
     'Flowmeter_main_hot': 'counter',
     'Flowmeter_main_cold': 'counter',
 }
-#-----Build maps for channels. Engineering variable to physical channel----- Could be called from config file.
+
 
 #-----Initialize daq and assign modules to physical variables----- Could be automated to scan daq and return the module types, then name accordingly.
 class dataforth():
