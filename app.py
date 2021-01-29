@@ -1,7 +1,9 @@
 import daq
 from flask import Flask, render_template, jsonify, request
-from threading import Thread, Event
+from threading import Thread, Event, Lock
+from queue import Queue, Empty
 from flask_socketio import SocketIO, emit
+import json
 #import eventlet
 from waitress import serve
 
@@ -9,9 +11,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
 
-socketio = SocketIO(app)
-
-daq = daq.dataforth(daq.settings)
+with open('config.txt') as json_file:
+    settings = json.load(json_file)
+#socketio = SocketIO(app)
+daq = daq.dataforth(settings)
 
 @app.route('/')
 def index():
@@ -45,6 +48,14 @@ def maq20_fetch_data():
     data = daq.read_modules(daq.modules)
     print(data)
     return jsonify(ajax_data=data)
+
+def background_tasks(variables, queue=Queue):
+
+    pass
+
+#queue = Queue()
+#background = Thread(target=background_tasks, args=(variables, queue))
+
 
 if __name__ == '__main__':
     #socketio.run(app, host='0.0.0.0') #used for eventlet with socketio
