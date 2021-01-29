@@ -125,10 +125,9 @@ class dataforth():
         self.mod6_DIO_DIOL = self.daq[6]
         self.mod7_DIO_DIOL = self.daq[7]
         self.mod8_DIO_DIOL = self.daq[8]
-
         self.module_instances = [self.mod1_AI_MVDN, self.mod2_AI_TTC, self.mod3_AO_VO, self.mod4_DI_DIV20, self.mod5_DIO_DIOL, self.mod6_DIO_DIOL, self.mod7_DIO_DIOL, self.mod8_DIO_DIOL]
-        #    global modules 
         self.modules = dict(zip(self.module_names, self.module_instances))
+
         #-----Initialize Special Functions on DIOL modules----
         self.modules_special = []
         for channel in self.channel_configs: 
@@ -147,9 +146,7 @@ class dataforth():
                     else:
                         self.modules_special.append(module)
                         exec('self.' + module + "=" + "DIOL(maq20_module=self." + module + ")")
-                        #eval(module) = DIOL(maq20_module=eval(module))
                         eval('self.' + module).write_special_function_2_pulse_frequency_counter_with_debounce(timer=timer, internal_trigger=1)
-        #            print(dir(eval(module)))
                 else:
                     pass
             else:
