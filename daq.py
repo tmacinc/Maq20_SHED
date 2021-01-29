@@ -228,6 +228,12 @@ def read_channels(channels): #accepts a list of requested channel names: eg ['T_
     data = {}
     for channel in channels:
         if channel in channel_map_inputs.keys(): 
+            if 'DIO' in str(channel_map_inputs[channel]):
+                data_cur = read(channel, "inputs")
+                if data_cur == 1: #invert logic so 0 = 1, 1 = 0
+                    data[channel] = 0
+                else:
+                    data[channel] = 1
             data[channel] = read(channel, "inputs")
         elif channel in channel_map_outputs.keys():
             if 'DIO' in str(channel_map_outputs[channel]):
@@ -236,7 +242,6 @@ def read_channels(channels): #accepts a list of requested channel names: eg ['T_
                     data[channel] = 0
                 else:
                     data[channel] = 1
-                #data[channel] = read_modbus_register(channel)
             else:
                 data[channel] = read(channel, "outputs")
         else:
@@ -255,7 +260,7 @@ def write_channels(channels):    # accepts a dict of the engineering channels to
                     timer = 1
                 frequency = str(channels[key])
                 exec(module + ".write_special_function_5_frequency_generator(timer=" + str(timer) + ", frequency=" + frequency + ")")
-        else: # regular output (boolean) add other function with elif statements
+        else: # regular output (boolean + AO) add other function with elif statements
             if key in channel_map_outputs.keys():
                 if 'DIO' in str(channel_map_outputs[key]):
                     if channels[key] == 'true' or channels[key] == 1:
