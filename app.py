@@ -1,18 +1,43 @@
-
-from flask import Flask, render_template, jsonify, request
-from threading import Thread, Event
-from flask_socketio import SocketIO, emit
-import eventlet
-from Auxiliary_In_out import InputValues
-demo = 1
-if demo != 1:
+demo = True
+#import daq
+if not demo:
     import daq
+from flask import Flask, render_template, jsonify, request
+from threading import Thread, Event, Lock
+from queue import Queue, Empty
+from flask_socketio import SocketIO, emit
+import json
+from time import sleep
+from datetime import datetime, timedelta
+#import eventlet
+from waitress import serve
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
 
-socketio = SocketIO(app)
+#----------------- Load settings from config file ---------------------------------------------------------------------
+
+with open('config.json') as json_file:
+    settings = json.load(json_file)
+#socketio = SocketIO(app)
+if not demo:
+    daq = daq.dataforth(settings)
+
+#----------------- Build variables dictionary - Can also have scales, eng units etc -----------------------------------
+
+variables = {}
+variables["daq_channels"] = []
+variables["vars_raw"] = {}
+for key in settings["channel_map_inputs"]:
+    variables['daq_channels'].append(key)
+for key in settings["channel_map_outputs"]:
+    variables['daq_channels'].append(key)
+for channel in variables['daq_channels']:
+    variables["vars_raw"][channel] = 0
+
+
+#------------------- Route Functions - Perform task when browser directs to link (serve html etc) ---------------------
 
 @app.route('/')
 def index():
@@ -29,10 +54,13 @@ def permeation():
 @app.route('/_update_page_data') #Accepts requested variables when page is loaded and sends current values to page. Could also be used to keep track of what is needed in the back end.
 def update_page_data():
     channels_requested = list(request.args.to_dict().keys())
-    if demo == 1:
-        data = InputValues("T_shed3").input_eng
+    data = {}
+    if demo:
+        data = {}
     else:
-        daq.read_channels(channels_requested) #if using variable layer to background control task, switch this to update variable and have background task call this function.
+        for channel in channels_requested:
+            data[channel] = variables['vars_raw'][channel]
+    
     return jsonify(ajax_data=data)
 
 @app.route('/_set_control') #Accepts requested control variable from user and sends value to controller.
@@ -41,21 +69,58 @@ def set_control():
     channels = list(request.args.to_dict().keys())
     channel_name = channels[0]
     print("Received request to update setting: " + channel_name + " to new value: " + msg[channel_name])
-    if demo == 1:
-        Pass
-    else:
-        daq.write_channels(msg) #if using variable layer to background control task, switch this to update variable and have background task call this function.
+    queue.put({"write_channels": msg})
     return jsonify(ajax_response="Received channel -> value: " + str(channel_name) + " -> " + str(msg[channel_name]))
 
 @app.route('/_maq20_fetch_data') #Used for maq20_overview.html
 def maq20_fetch_data():
-    if demo == 1:
-        data = {'mod1_AI_MVDN': [-2.988048, -2.988048, -2.988048, -2.988048, -2.988048, -2.988048, -2.988048, -2.988048], 'mod2_AI_TTC': [21.3867, -585.9375, -585.9375, -585.9375, -585.9375, -585.9375, -585.9375, -585.9375], 'mod3_AO_VO': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'mod4_DI_DIV20': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'mod5_DIO_DIOL': [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], 'mod6_DIO_DIOL': [0, 1, 1, 1, 1, 1, 1, 1, 1, 1], 'mod7_DIO_DIOL': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 'mod8_DIO_DIOL': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}
+    if demo:
+        data = {}
     else:
-        daq.read_modules(daq.modules)
-
-    print(data)
+        data = daq.read_modules(daq.modules)
     return jsonify(ajax_data=data)
 
+#--------------------- Regular functions - Can be used by routes, background thread etc. ------------------------------
+
+def read_daq(): # get current channel values from list in variables['vars_raw']
+    channels = variables['daq_channels']
+    if demo:
+        data = {}
+    else:
+        data = daq.read_channels(channels)
+    update_variables(data)
+
+def update_variables(data): # updates the variables dictionary with new values
+    for key in data.keys():
+        variables['vars_raw'][key] = data[key]
+
+def background_tasks(queue=Queue): # Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
+    print("Background thread started")
+    t_now = datetime.now()
+    t_next = t_now + timedelta(seconds=1)
+    while True:
+        while t_now < t_next:                               # runs at higher frequency
+            if not queue.empty(): # process queue
+                task = queue.get()
+                for key in task.keys():
+                    if key == "write_channels":
+                        daq.write_channels(task[key])
+            t_now = datetime.now()
+            sleep(0.01)
+        t_next = t_next + timedelta(seconds=1)              # runs every 1 second
+        t_now = datetime.now()
+        read_daq()
+
+
+#--------------------- Initialize background thread and start flask app ------------------------------------------------
+
+
+queue = Queue()
+background = Thread(target=background_tasks, args=(queue,))
+background.daemon = True
+background.start()
+
+
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0')
+    #socketio.run(app, host='0.0.0.0')  # used for eventlet with socketio
+    serve(app, port=5000)               # used for waitress, without sockets
