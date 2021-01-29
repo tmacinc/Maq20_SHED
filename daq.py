@@ -113,7 +113,7 @@ channel_configs = {
 
 #def initialize_daq():
 #    global daq 
-daq = MAQ20(ip_address="192.168.1.10", port=502)
+daq = MAQ20(ip_address="192.168.0.10", port=502)
 module_names = ['mod1_AI_MVDN', 'mod2_AI_TTC', 'mod3_AO_VO', 'mod4_DI_DIV20', 'mod5_DIO_DIOL', 'mod6_DIO_DIOL', 'mod7_DIO_DIOL', 'mod8_DIO_DIOL']
 """
 global mod1_AI_MVDN
@@ -228,15 +228,20 @@ def read_channels(channels): #accepts a list of requested channel names: eg ['T_
     data = {}
     for channel in channels:
         if channel in channel_map_inputs.keys(): 
+            if 'DIO' in str(channel_map_inputs[channel]):
+                data_cur = read(channel, "inputs")
+                if data_cur == 1: #invert logic so 0 = 1, 1 = 0
+                    data[channel] = 0
+                else:
+                    data[channel] = 1
             data[channel] = read(channel, "inputs")
         elif channel in channel_map_outputs.keys():
-            if 'DIOL' in str(channel_map_outputs[channel]):
+            if 'DIO' in str(channel_map_outputs[channel]):
                 data_cur = read_modbus_register(channel)
                 if data_cur == 1: #invert logic so 0 = 1, 1 = 0
                     data[channel] = 0
                 else:
                     data[channel] = 1
-                #data[channel] = read_modbus_register(channel)
             else:
                 data[channel] = read(channel, "outputs")
         else:
@@ -255,12 +260,15 @@ def write_channels(channels):    # accepts a dict of the engineering channels to
                     timer = 1
                 frequency = str(channels[key])
                 exec(module + ".write_special_function_5_frequency_generator(timer=" + str(timer) + ", frequency=" + frequency + ")")
-        else: # regular output (boolean) add other function with elif statements
+        else: # regular output (boolean + AO) add other function with elif statements
             if key in channel_map_outputs.keys():
-                if channels[key] == 'true' or channels[key] == 1:
-                    value = 0
-                else:
-                    value = 1
+                if 'DIO' in str(channel_map_outputs[key]):
+                    if channels[key] == 'true' or channels[key] == 1:
+                        value = 0
+                    else:
+                        value = 1
+                elif 'AO' in str(channel_map_outputs[key]):
+                    value = channels[key]
                 channel_to_write = str(channel_map_outputs[key])
                 exec(channel_to_write + '=' + str(value))
             else:
@@ -276,9 +284,11 @@ def write_channels(channels):    # accepts a dict of the engineering channels to
 
 #try:
 #    while True:
-#        channels = {'Exhaust_damper': '65'}
+#        channels = {'Valve_shed3_hot': '0.5'}
 #        write_channels(channels)
 #        print(channels)
+#        channel = read_channels(['MVDN_Placeholder_7'])
+#        print(channel)
 #        time.sleep(1)
 #except KeyboardInterrupt:
 #    pass
