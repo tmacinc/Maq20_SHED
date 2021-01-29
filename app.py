@@ -2,7 +2,8 @@ import daq
 from flask import Flask, render_template, jsonify, request
 from threading import Thread, Event
 from flask_socketio import SocketIO, emit
-import eventlet
+#import eventlet
+from waitress import serve
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -46,4 +47,5 @@ def maq20_fetch_data():
     return jsonify(ajax_data=data)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0')
+    #socketio.run(app, host='0.0.0.0') #used for eventlet with socketio
+    serve(app, port=5000)
