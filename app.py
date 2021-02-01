@@ -24,6 +24,7 @@ with open('config.json') as json_file:
 if not demo:
     daq = daq.dataforth(settings)
 
+
 #----------------- Build variables dictionary - Can also have scales, eng units etc -----------------------------------
 
 variables = {}
@@ -55,12 +56,14 @@ def permeation():
 def update_page_data():
     channels_requested = list(request.args.to_dict().keys())
     data = {}
+
     if demo:
         data = {}
     else:
         for channel in channels_requested:
             data[channel] = variables['vars_raw'][channel]
     
+
     return jsonify(ajax_data=data)
 
 @app.route('/_set_control') #Accepts requested control variable from user and sends value to controller.
