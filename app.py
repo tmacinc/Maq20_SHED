@@ -35,7 +35,8 @@ for channel in variables['daq_channels']:
     variables["vars_raw"][channel] = 0
 
 
-#------------------- Route Functions - Perform task when browser directs to link (serves html etc) ---------------------
+#------------------- Route Functions - Perform task when browser directs to link (serves html etc) ------------------------------------------
+
 #------------------- Html routes ---------------------------------------------------------------------------------------
 
 @app.route('/')
@@ -50,9 +51,9 @@ def maq20_overview():
 def permeation():
     return render_template('permeation.html')
 
-#------------------- Data routes used by JQuery --------------------------------------------
+#------------------- Data routes used by JQuery ------------------------------------------------------------------------
 
-@app.route('/_update_page_data') #Accepts requested variables when page is loaded and sends current values to page. Could also be used to keep track of what is needed in the back end.
+@app.route('/_update_page_data')                            #Accepts variables list from js and returns current values. 
 def update_page_data():
     channels_requested = list(request.args.to_dict().keys())
     data = {}
@@ -60,7 +61,7 @@ def update_page_data():
         data[channel] = variables['vars_raw'][channel]
     return jsonify(ajax_data=data)
 
-@app.route('/_set_control') #Accepts requested control variable from user and sends value to controller.
+@app.route('/_set_control')                                 #Accepts requested control variable from user and sends values to background task.
 def set_control():
     msg = request.args.to_dict()
     channels = list(request.args.to_dict().keys())
@@ -69,19 +70,19 @@ def set_control():
     queue.put({"write_channels": msg})
     return jsonify(ajax_response="Received channel -> value: " + str(channel_name) + " -> " + str(msg[channel_name]))
 
-@app.route('/_maq20_fetch_data') #Used for maq20_overview.html
+@app.route('/_maq20_fetch_data')                            #Used for maq20_overview.html - not super useful outside of an overview
 def maq20_fetch_data():
     data = daq.read_modules(daq.modules)
     return jsonify(ajax_data=data)
 
-#--------------------- Regular functions - Can be used by routes, background thread etc. ------------------------------
+#--------------------- Regular functions - Can be used by routes, background thread etc. --------------------------------------------------------
 
-def read_daq(): # get current channel values from list in variables['vars_raw']
+def read_daq():                                             # get current channel values from list in variables['vars_raw']
     channels = variables['daq_channels']
     data = daq.read_channels(channels)
     update_variables(data)
 
-def update_variables(data): # updates the variables dictionary with new values
+def update_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
         variables['vars_raw'][key] = data[key]
 
