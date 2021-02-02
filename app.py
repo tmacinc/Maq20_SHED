@@ -85,12 +85,14 @@ def update_variables(data): # updates the variables dictionary with new values
     for key in data.keys():
         variables['vars_raw'][key] = data[key]
 
-def background_tasks(queue=Queue): # Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
+#--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
+
+def background_tasks(queue=Queue): 
     print("Background thread started")
     t_now = datetime.now()
     t_next = t_now + timedelta(seconds=1)
     while True:
-        while t_now < t_next:                               # runs at higher frequency
+        while t_now < t_next:                               # runs at higher frequency (Event based execution using queue etc.)
             if not queue.empty(): # process queue
                 task = queue.get()
                 for key in task.keys():
@@ -98,10 +100,9 @@ def background_tasks(queue=Queue): # Parallel function to the Flask functions. U
                         daq.write_channels(task[key])
             t_now = datetime.now()
             sleep(0.01)
-        t_next = t_next + timedelta(seconds=1)              # runs every 1 second
+        t_next = t_next + timedelta(seconds=1)              # runs every 1 second (Slower tasks, reading daq etc)
         t_now = datetime.now()
         read_daq()
-
 
 #--------------------- Initialize background thread --------------------------------------------------------------------
 
