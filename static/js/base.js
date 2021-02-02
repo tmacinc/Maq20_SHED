@@ -63,6 +63,7 @@ function changeBackgroundColor(input, value){
                 outputs.push(variable);
             }}
         var variables = {"Inputs": inputs, "Outputs": outputs}              // return object {dict} on input and output names
+        console.log(variables)
         return variables;
       }
 
