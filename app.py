@@ -12,12 +12,13 @@ from waitress import serve
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
+#socketio = SocketIO(app)       # If using sockets. Binds SocketIO to app
 
-#----------------- Load settings from config file ---------------------------------------------------------------------
+#----------------- Load settings from config file, initiate daq -------------------------------------------------------
 
 with open('config.json') as json_file:
     settings = json.load(json_file)
-#socketio = SocketIO(app)
+
 daq = daq.dataforth(settings)
 
 #----------------- Build variables dictionary - Can also have scales, eng units etc -----------------------------------
@@ -33,8 +34,8 @@ for channel in variables['daq_channels']:
     variables["vars_raw"][channel] = 0
 
 
-#------------------- Route Functions - Perform task when browser directs to link (serve html etc) ---------------------
-
+#------------------- Route Functions - Perform task when browser directs to link (serves html etc) ---------------------
+#------------------- Html routes ---------------------------------------------------------------------------------------
 @app.route('/')
 def index():
     return render_template('permeation.html')
@@ -46,6 +47,8 @@ def maq20_overview():
 @app.route('/permeation.html')
 def permeation():
     return render_template('permeation.html')
+
+#------------------- Data routes used by JQuery --------------------------------------------
 
 @app.route('/_update_page_data') #Accepts requested variables when page is loaded and sends current values to page. Could also be used to keep track of what is needed in the back end.
 def update_page_data():
