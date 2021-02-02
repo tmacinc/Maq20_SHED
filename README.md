@@ -45,7 +45,7 @@ Install Instructions
 5. Install dependencies from requirements.txt using pip install -r requirements.txt
 
 6. if using Maq20:
- * Install pymodbus (note: pymodbus3 is no longer supported. Install pymodbus and confirm updated maq20com.py from /dependencies is used)
+ * Install pymodbus (note: pymodbus3 is no longer supported. Install pymodbus and confirm updated maq20com.py from dependencies is used)
  * Get the modified MAQ20 api from https://github.com/tmacinc/MAQ20_API_Python.git and install within venv using "python setup.py install"
  * Or install using "python /dependencies/MAQ20_APR_Python-master/setup.py" and copy the files from dependencies/Updates_to_maq20_api into the following folders after installation.
   1. "maq20com.py" -> /Lib/site-packages/maq20/
@@ -59,7 +59,7 @@ Running Application
 2. Install waitress using "pip install waitress"
 3. Run project using python app.py
 
-### Linux (need to confirm options. Can use eventlet with python app.py. Gunicorn uses different method)
+### Linux (need to confirm options. Can use eventlet with python app.py. Gunicorn uses different method. More exist)
 
 1. Using Eventlet
  * Uncomment eventlet lines in app.py
