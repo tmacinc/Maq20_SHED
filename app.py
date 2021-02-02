@@ -6,8 +6,9 @@ from flask_socketio import SocketIO, emit
 import json
 from time import sleep
 from datetime import datetime, timedelta
-#import eventlet
-from waitress import serve
+#import eventlet                # If using sockets. Otherwise sockets will use long polling (cross platform)
+from waitress import serve      # Production server for windows applications
+#import gunicorn                # Production server for linux applications
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -36,6 +37,7 @@ for channel in variables['daq_channels']:
 
 #------------------- Route Functions - Perform task when browser directs to link (serves html etc) ---------------------
 #------------------- Html routes ---------------------------------------------------------------------------------------
+
 @app.route('/')
 def index():
     return render_template('permeation.html')
@@ -101,7 +103,7 @@ def background_tasks(queue=Queue): # Parallel function to the Flask functions. U
         read_daq()
 
 
-#--------------------- Initialize background thread and start flask app ------------------------------------------------
+#--------------------- Initialize background thread --------------------------------------------------------------------
 
 
 queue = Queue()
@@ -109,6 +111,7 @@ background = Thread(target=background_tasks, args=(queue,))
 background.daemon = True
 background.start()
 
+#-------------------- Start flask app on wsgi server -------------------------------------------------------------------
 
 if __name__ == '__main__':
     #socketio.run(app, host='0.0.0.0')  # used for eventlet with socketio
