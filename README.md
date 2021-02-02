@@ -1,8 +1,10 @@
-Flask frontend template. Work in progress using Dataforth Maq20 and variables from SHED.
+Flask Frontend Template. 
+======
+Work in progress using Dataforth Maq20 and variables from SHED.
 
 Application Overview:
 
-![alt text](/docs/System_Overview.png "System Overview")
+![alt text](/docs/System_Overview.jpg "System Overview")
 
 This is meant to have Javascript and css modules that can be used as needed for future projects. Can also create template front end layouts that require id's to be set for future projects.
 Current modules:
