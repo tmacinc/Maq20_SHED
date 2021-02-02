@@ -1,4 +1,8 @@
-Flask frontend template. Work in progress using Dataforth Maq20 for testing and variables from SHED.
+Flask frontend template. Work in progress using Dataforth Maq20 and variables from SHED.
+
+Application Overview:
+
+![alt text](/docs/System_Overview.pdf "System Overview")
 
 This is meant to have Javascript and css modules that can be used as needed for future projects. Can also create template front end layouts that require id's to be set for future projects.
 Current modules:
@@ -14,10 +18,12 @@ To use,
 
 create venv folder for project using python -m venv <folder>
 
+Clone repository into folder.
+
 Install dependencies from requirements.txt using pip install -r requirements.txt
 
 For Maq20:
-Install pymodbus3 (note: pymodbus3 is no longer supported. Install pymodbus and confirm updated maq20com.py forom dependencies is used)
+Install pymodbus (note: pymodbus3 is no longer supported. Install pymodbus and confirm updated maq20com.py forom dependencies is used)
 Get the modified MAQ20 api from https://github.com/tmacinc/MAQ20_API_Python.git and install within venv using python setup.py install
     Or copy the files from dependecies/Updates to maq20 api after installation to update the code.
 
