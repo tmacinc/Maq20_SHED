@@ -15,9 +15,11 @@ function update_page_data(allElements, data, chart, options){
             var parsed_data = response.ajax_data;
             // console.log(parsed_data);
             for (var i in parsed_data) {
+                console.log(parsed_data)
+                console.log(i)
                 for (var j in gauge_vars){
                     var k = 0;
-                    console.log(gauge_vars[k])
+                    console.log(j)
                     if (i == gauge_vars[j]) {
                         data.setValue(j, 1, parsed_data[i]);
                         chart.draw(data, options);

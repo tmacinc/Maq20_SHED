@@ -15,21 +15,20 @@ function update_page_data(allElements, data, chart, options){
             var parsed_data = response.ajax_data;
             console.log(parsed_data);
             for (var i in parsed_data) {
+                var k = 0;
                 for (var j in gauge_vars){
-                    var k = 0;
-                    console.log(gauge_vars[k])
                     if (i == gauge_vars[j]) {
                         data.setValue(k, 1, parsed_data[i]);
                         chart.draw(data, options);
                     }
-                    console.log(parsed_data)
                 if (parsed_data[i] != "chan_name_error"){
                 number_received = parsed_data[i];
                 $('#' + i).html(number_received);               // update value at current id
                 $('#' + i).addClass('bold');                    // bold numbers when they are updated
                 //changeBackgroundColor("#" + i, number_received);// change background color based on value for alarming reasons
-                k += 1;
-            }}}
+            } k += 1;
+        }             
+        }
         }
     })
 }
