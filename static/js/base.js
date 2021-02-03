@@ -1,5 +1,5 @@
 
-var gauge_vars = ["Flowmeter_shed3_hot", "T_shed2_cold"]
+var gauge_vars = ["T_shed3_hot", "T_shed3_cold", "T_shed3"]
 
 //Get current values from server and update display. Activated at interval as set in document.ready function
 function update_page_data(allElements, data, chart, options){
@@ -22,6 +22,7 @@ function update_page_data(allElements, data, chart, options){
                         data.setValue(k, 1, parsed_data[i]);
                         chart.draw(data, options);
                     }
+                    console.log(parsed_data)
                 if (parsed_data[i] != "chan_name_error"){
                 number_received = parsed_data[i];
                 $('#' + i).html(number_received);               // update value at current id
@@ -72,7 +73,10 @@ function changeBackgroundColor(input, value){
             }else{
                 outputs.push(variable);
             }}
-        var variables = {"Inputs": inputs, "Outputs": outputs}              // return object {dict} on input and output names
+
+        var variables = {"Inputs": inputs, "Outputs": outputs} 
+        console.log(variables)             // return object {dict} on input and output names
+
         return variables;
       }
 
@@ -124,9 +128,9 @@ function documentReady(){
 
   var data = google.visualization.arrayToDataTable([
     ['Label', 'Value'],
-    ['T Shed2 Cold', 80],
-    ['CPU', 55],
-    ['Network', 68]
+    ['T Shed3 Hot', 80],
+    ['T Shed3 Cold', 55],
+    ['T Shed 3', 68]
   ]);
   var options = {
     width: 400, height: 120,
@@ -140,6 +144,7 @@ function documentReady(){
 
 // get list of variables used by page (tags which have and id="")
     var variables = get_variables()
+    console.log(variables)
     
 // Set JQuery refresh interval.
   setInterval(update_page_data, 1000, variables.Outputs, data, chart, options)
