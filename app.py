@@ -52,7 +52,6 @@ calibration = settings["calibration"]
 
 
 
-
 #------------------- Route Functions - Perform task when browser directs to link (serves html etc) ------------------------------------------
 
 #------------------- Html routes ---------------------------------------------------------------------------------------
@@ -78,7 +77,6 @@ def update_page_data():
     for channel in channels_requested:
         if channel in variables['vars_eng'].keys():
             data[channel] = variables['vars_eng'][channel]
-
     return jsonify(ajax_data=data)
 
 @app.route('/_set_control')                                 #Accepts requested control variable from user and sends values to background task.
@@ -105,7 +103,10 @@ def read_daq():                                             # get current channe
 def update_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
         variables['vars_raw'][key] = data[key]
-    variables['vars_eng'] = auxiliary_calculations.raw_to_eng(variables['vars_raw'])
+    temp = auxiliary_calculations.raw_to_eng(variables['vars_raw'])
+    for key in temp.keys():
+        variables['vars_eng'][key] = temp[key]
+    
 
 #--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
 
@@ -127,7 +128,6 @@ def background_tasks(queue=Queue):
         read_daq()
 
 #--------------------- Initialize background thread --------------------------------------------------------------------
-
 
 queue = Queue()
 background = Thread(target=background_tasks, args=(queue,))
