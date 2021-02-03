@@ -1,7 +1,9 @@
-demo = True
-#import daq
-if not demo:
-    import daq
+demo = True   # bool
+if demo:
+    import daq_demo as daq
+else:
+     import daq
+
 from flask import Flask, render_template, jsonify, request
 from threading import Thread, Event, Lock
 from queue import Queue, Empty
@@ -11,6 +13,7 @@ from time import sleep
 from datetime import datetime, timedelta
 #import eventlet
 from waitress import serve
+import auxiliary_calculations
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -21,21 +24,29 @@ app.config['DEBUG'] = True
 with open('config.json') as json_file:
     settings = json.load(json_file)
 #socketio = SocketIO(app)
-if not demo:
-    daq = daq.dataforth(settings)
+daq = daq.dataforth(settings)
 
 
 #----------------- Build variables dictionary - Can also have scales, eng units etc -----------------------------------
+## convert this to class once finalized?
 
 variables = {}
 variables["daq_channels"] = []
 variables["vars_raw"] = {}
+variables["vars_eng"] = {}
 for key in settings["channel_map_inputs"]:
     variables['daq_channels'].append(key)
 for key in settings["channel_map_outputs"]:
     variables['daq_channels'].append(key)
 for channel in variables['daq_channels']:
     variables["vars_raw"][channel] = 0
+for channel in variables['daq_channels']:
+    variables['vars_eng'][channel] = 0
+variables['vars_eng']['T_shed2'] = 12.34
+variables['vars_eng']['T_shed3'] = 12.34
+calibration = settings["calibration"]
+
+
 
 
 #------------------- Route Functions - Perform task when browser directs to link (serve html etc) ---------------------
@@ -56,13 +67,9 @@ def permeation():
 def update_page_data():
     channels_requested = list(request.args.to_dict().keys())
     data = {}
-
-    if demo:
-        data = {}
-    else:
-        for channel in channels_requested:
-            data[channel] = variables['vars_raw'][channel]
-    
+    for channel in channels_requested:
+        if channel in variables['vars_eng'].keys():
+            data[channel] = variables['vars_eng'][channel]
 
     return jsonify(ajax_data=data)
 
@@ -77,25 +84,20 @@ def set_control():
 
 @app.route('/_maq20_fetch_data') #Used for maq20_overview.html
 def maq20_fetch_data():
-    if demo:
-        data = {}
-    else:
-        data = daq.read_modules(daq.modules)
+    data = daq.read_modules(daq.modules)
     return jsonify(ajax_data=data)
 
 #--------------------- Regular functions - Can be used by routes, background thread etc. ------------------------------
 
 def read_daq(): # get current channel values from list in variables['vars_raw']
     channels = variables['daq_channels']
-    if demo:
-        data = {}
-    else:
-        data = daq.read_channels(channels)
+    data = daq.read_channels(channels)
     update_variables(data)
 
 def update_variables(data): # updates the variables dictionary with new values
     for key in data.keys():
         variables['vars_raw'][key] = data[key]
+    variables['vars_eng'] = auxiliary_calculations.raw_to_eng(variables['vars_raw'])
 
 def background_tasks(queue=Queue): # Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
     print("Background thread started")
