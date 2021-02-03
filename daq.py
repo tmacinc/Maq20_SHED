@@ -3,7 +3,9 @@ from maq20.modules.diol import DIOL
 from maq20 import utilities as utils
 import time
 
-''' This class is a layer to simplify using the Maq20 api. It allows for variable names to be used instead of channel names throughout the flask application, with '''
+
+# This class is a layer to simplify using the Maq20 api. It allows for variable names to be used instead of channel names throughout the flask application, with '''
+
 
 #-----Initialize daq and assign modules to physical variables----- Could be automated to scan daq and return the module types, then name accordingly.
 class dataforth():

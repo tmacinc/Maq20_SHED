@@ -99,5 +99,23 @@
         "Flowmeter_shed3_cold": "counter",
         "Flowmeter_main_hot": "counter",
         "Flowmeter_main_cold": "counter"
+    },
+    "system_variables": {
+        "T_shed2" : 0,
+        "T_shed3": 0
+    },
+    "calibration": {
+        "T_shed2_l" : 78.6781311,
+        "T_shed2_r": 78.6781311,  
+        "T_shed3_l": 78.6781311,    
+        "T_shed3_r": 378.6781311,         
+        "Flowmeter_shed3_hot": 151.4,    
+        "Flowmeter_shed3_cold": 151.4,   
+        "Flowmeter_shed2_hot": 75.7,   
+        "Flowmeter_shed2_cold": 75.7,   
+        "Flowmeter_main_hot": 75.7,     
+        "Flowmeter_main_cold": 151.4,    
+        "Flowmeter_shed1_hot": 151.4,    
+        "Flowmeter_shed1_cold": 151.4   
     }
 }
