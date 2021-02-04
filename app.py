@@ -98,15 +98,19 @@ def maq20_fetch_data():
 def read_daq():                                             # get current channel values from list in variables['vars_raw']
     channels = variables['daq_channels']
     data = daq.read_channels(channels)
-    update_variables(data)
+    update_daq_variables(data)
 
-def update_variables(data):                                 # updates the variables dictionary with new values
+def update_daq_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
         variables['vars_raw'][key] = data[key]
     temp = auxiliary_calculations.raw_to_eng(variables['vars_raw'])
     for key in temp.keys():
         variables['vars_eng'][key] = temp[key]
     
+def update_calculated_variables():
+    variables['vars_eng']['T_shed2'] = round((variables["vars_eng"]["T_shed2_l"] + variables["vars_eng"]["T_shed2_r"]) / 2, 2)
+    variables['vars_eng']['T_shed3'] = round((variables["vars_eng"]["T_shed3_l"] + variables["vars_eng"]["T_shed3_r"]) / 2, 2)
+
 
 #--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
 
@@ -126,6 +130,7 @@ def background_tasks(queue=Queue):
         t_next = t_next + timedelta(seconds=1)              # runs every 1 second (Slower tasks, reading daq etc)
         t_now = datetime.now()
         read_daq()
+        update_calculated_variables()
 
 #--------------------- Initialize background thread --------------------------------------------------------------------
 
