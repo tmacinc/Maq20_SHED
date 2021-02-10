@@ -25,15 +25,20 @@ daq = daq.dataforth(settings)
 
 #----------------- Build variables dictionary - Can also have scales, eng units etc -----------------------------------
 
-variables = {}
-variables["daq_channels"] = []
-variables["vars_raw"] = {}
+daq_channels = []
 for key in settings["channel_map_inputs"]:
-    variables['daq_channels'].append(key)
+    daq_channels.append(key)
 for key in settings["channel_map_outputs"]:
-    variables['daq_channels'].append(key)
-for channel in variables['daq_channels']:
-    variables["vars_raw"][channel] = 0
+    daq_channels.append(key)
+vars_raw = {}
+for channel in daq_channels:
+    vars_raw[channel] = channel
+vars_eng = {}
+for channel in vars_raw.keys():
+    vars_eng[channel] = vars_raw[channel]
+vars_sys = {}
+for channel in settings['system_variables'].keys():
+    vars_sys[channel] = settings['system_variables'][channel]
 
 #------------------- Initialize alarms ---------------------------------------------------------------------------------
 
@@ -64,7 +69,7 @@ def update_page_data():
     channels_requested = list(request.args.to_dict().keys())
     data = {}
     for channel in channels_requested:
-        data[channel] = variables['vars_raw'][channel]
+        data[channel] = vars_raw[channel]
     return jsonify(ajax_data=data)
 
 @app.route('/_set_control')                                 #Accepts requested control variable from user and sends values to background task.
@@ -83,14 +88,14 @@ def maq20_fetch_data():
 
 #--------------------- Regular functions - Can be used by routes, background thread etc. --------------------------------------------------------
 
-def read_daq():                                             # get current channel values from list in variables['vars_raw']
-    channels = variables['daq_channels']
+def read_daq():                                             # get current channel values from list in vars_raw
+    channels = daq_channels
     data = daq.read_channels(channels)
     update_variables(data)
 
 def update_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
-        variables['vars_raw'][key] = data[key]
+        vars_raw[key] = data[key]
 
 #--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
 
@@ -112,7 +117,6 @@ def background_tasks(queue=Queue):
         read_daq()
 
 #--------------------- Initialize background thread --------------------------------------------------------------------
-
 
 queue = Queue()
 background = Thread(target=background_tasks, args=(queue,))
