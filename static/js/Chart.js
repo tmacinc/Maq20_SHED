@@ -7573,9 +7573,9 @@ function throttled(fn, thisArg) {
 	};
 }
 
-function createDiv(cls) {
+function createDiv(self) {
 	var el = document.createElement('div');
-	el.className = cls || '';
+	el.className = self || '';
 	return el;
 }
 

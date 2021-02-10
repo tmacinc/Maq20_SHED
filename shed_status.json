@@ -1,28 +1,34 @@
 {
     "SHED_status":{
         "SHED1":{
-            "state": 0,
-            "active_config": {
-                "Exhaust_fan": 1,
-                "Pump_main_cold": 1,
-                "Valve_main_cold": 5,
-                "Pump_shed1_cold": 1,
-                "Valve_shed1_cold": 10
-            },
-            "inactive_config": {
-                "Pump_shed1_cold": 0,
-                "Valve_shed1_cold": 0
-            },
-            "alarm_config":{
-                "Exhaust_fan": 1,
-                "Pump_shed1_cold": 0,
-                "Valve_shed1_cold": 0
-            },
+            "state": "off",
+            "operating_state": "off",
+            "state_configs":{
+                "on": {
+                    "Exhaust_fan": 1,
+                    "Pump_main_cold": 1,
+                    "Valve_main_cold": 5,
+                    "Pump_shed1_cold": 1,
+                    "Valve_shed1_cold": 10
+                },
+                "off": {
+                    "Pump_shed1_cold": 0,
+                    "Valve_shed1_cold": 0
+                },
+                "alarm_config":{
+                    "Exhaust_fan": 1,
+                    "Pump_shed1_cold": 0,
+                    "Valve_shed1_cold": 0
+            }
+
+            },            
             "shed_ready": {
                 "T_shed1_cold": 15,
                 "T_main_cold": 13,
                 "Flowmeter_main_cold": 4.5,
                 "Flowmeter_shed1_cold": 4.5
+            }
+
             }
         },
         "SHED2": {
@@ -99,4 +105,4 @@
 
 
         
-    }
+    

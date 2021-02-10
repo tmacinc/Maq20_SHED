@@ -289,93 +289,93 @@ class InputValues:
     }
     
     #@classmethod
-    def update_raw(cls, value):
+    def update_raw(self, value):
         if demo == 1: # assigns random values to all inputs for the purpose of demonstration
-            cls.input_raw.update({'T_shed3_l': random.uniform(0.4, 0.5)})
-            cls.input_raw.update({'T_shed3_r': random.uniform(0.4, 0.5)})
-            cls.input_raw.update({'T_shed2_l': random.uniform(0.4, 0.5)})
-            cls.input_raw.update({'T_shed2_r': random.uniform(0.4, 0.5)})
-            cls.input_raw['Flowmeter_shed3_hot'] = random.uniform(4.5, 5)
-            cls.input_raw['Flowmeter_shed3_cold'] = random.uniform(4.5, 5)
-            cls.input_raw['Flowmeter_shed2_hot'] = random.uniform(4.5, 5)
-            cls.input_raw['Flowmeter_shed2_cold'] = random.uniform(4.5, 5)
-            cls.input_raw['Flowmeter_main_hot'] = random.uniform(4.5, 5)
-            cls.input_raw['Flowmeter_main_cold'] = random.uniform(4.5, 5)
-            cls.input_raw['Flowmeter_shed1_hot'] = random.uniform(4.5, 5)
-            cls.input_raw['Flowmeter_shed1_cold'] = random.uniform(4.5, 5)
-            cls.input_raw['T_shed3_hot'] =  random.uniform(10, 65)
-            cls.input_raw['T_shed3_cold'] = random.uniform(10, 65)
-            cls.input_raw['T_shed2_hot'] = random.uniform(10, 65)
-            cls.input_raw['T_shed2_cold'] = random.uniform(10, 65)
-            cls.input_raw['T_main_hot'] = random.uniform(10, 65)
-            cls.input_raw['T_main_cold'] = random.uniform(10, 65)
-            cls.input_raw['T_shed1_hot'] = random.uniform(10, 65)
-            cls.input_raw['T_shed1_cold'] = random.uniform(10, 65)
+            self.input_raw.update({'T_shed3_l': random.uniform(0.4, 0.5)})
+            self.input_raw.update({'T_shed3_r': random.uniform(0.4, 0.5)})
+            self.input_raw.update({'T_shed2_l': random.uniform(0.4, 0.5)})
+            self.input_raw.update({'T_shed2_r': random.uniform(0.4, 0.5)})
+            self.input_raw['Flowmeter_shed3_hot'] = random.uniform(4.5, 5)
+            self.input_raw['Flowmeter_shed3_cold'] = random.uniform(4.5, 5)
+            self.input_raw['Flowmeter_shed2_hot'] = random.uniform(4.5, 5)
+            self.input_raw['Flowmeter_shed2_cold'] = random.uniform(4.5, 5)
+            self.input_raw['Flowmeter_main_hot'] = random.uniform(4.5, 5)
+            self.input_raw['Flowmeter_main_cold'] = random.uniform(4.5, 5)
+            self.input_raw['Flowmeter_shed1_hot'] = random.uniform(4.5, 5)
+            self.input_raw['Flowmeter_shed1_cold'] = random.uniform(4.5, 5)
+            self.input_raw['T_shed3_hot'] =  random.uniform(10, 65)
+            self.input_raw['T_shed3_cold'] = random.uniform(10, 65)
+            self.input_raw['T_shed2_hot'] = random.uniform(10, 65)
+            self.input_raw['T_shed2_cold'] = random.uniform(10, 65)
+            self.input_raw['T_main_hot'] = random.uniform(10, 65)
+            self.input_raw['T_main_cold'] = random.uniform(10, 65)
+            self.input_raw['T_shed1_hot'] = random.uniform(10, 65)
+            self.input_raw['T_shed1_cold'] = random.uniform(10, 65)
 
             if demo != 1: # Replace with read channels function if neccesary
-                if "MVDN" in cls.channel_map[value]:
-                    cls.input_raw[value] = eval(cls.channel_map[value][:-3]).read_data(int(cls.channel_map[value][-2]), number_of_channels=1)
-                if "DIOL" in cls.channel_map[value]:
-                    cls.input_raw[value] = eval(cls.channel_map[value][:-3]).read_data(int(cls.input_raw[value][-2]), number_of_channels=1)[0]
-            #cls.raw_to_eng(cls,value)
-            return cls.input_raw[value]
+                if "MVDN" in self.channel_map[value]:
+                    self.input_raw[value] = eval(self.channel_map[value][:-3]).read_data(int(self.channel_map[value][-2]), number_of_channels=1)
+                if "DIOL" in self.channel_map[value]:
+                    self.input_raw[value] = eval(self.channel_map[value][:-3]).read_data(int(self.input_raw[value][-2]), number_of_channels=1)[0]
+            #self.raw_to_eng(self,value)
+            return self.input_raw[value]
 
-    def raw_to_eng(cls, value):
+    def raw_to_eng(self, value):
         if value.endswith("_l", 7, 9) or value.endswith("_r", 7, 9):  # checks to see if shed temperature key from position 7-9 -> will eliminate most other combos ending with _l or _r
-            cls.input_eng[value] = float(cls.input_raw[value] * cls.calibration[value])
+            self.input_eng[value] = float(self.input_raw[value] * self.calibration[value])
         elif value.startswith("Flowmeter_"):
             if flowrate_pulse_method:  #if pulse is used to calculate frequency set value to true at top of file:
-                prev_count = cls.flow_count[value][0]
-                prev_time = cls.flow_count[value][1]
-                current_count = cls.input_raw[value]
+                prev_count = self.flow_count[value][0]
+                prev_time = self.flow_count[value][1]
+                current_count = self.input_raw[value]
                 current_time = time.time()
                 sample_time = prev_time - current_time
-                #print(cls.flow_count[value])
+                #print(self.flow_count[value])
                 #print(current_count, current_time)
-                cls.input_eng[value] = (cls.input_raw[value] - cls.flow_count[value][0]+1)*60 / (.1+time.time() - cls.flow_count[value][1])
-                cls.flow_count[value][0] = current_count
-                cls.flow_count[value][1] = time.time()
+                self.input_eng[value] = (self.input_raw[value] - self.flow_count[value][0]+1)*60 / (.1+time.time() - self.flow_count[value][1])
+                self.flow_count[value][0] = current_count
+                self.flow_count[value][1] = time.time()
             else:
-                cls.input_eng[value] = cls.input_raw[value] / cls.calibration[value] # cls.calibration[value] is pulses per gallon        
+                self.input_eng[value] = self.input_raw[value] / self.calibration[value] # self.calibration[value] is pulses per gallon        
         else:
-            cls.input_eng[value] = round(cls.input_raw[value],2)
-        return cls.input_eng[value]
+            self.input_eng[value] = round(self.input_raw[value],2)
+        return self.input_eng[value]
     
-    def value_update(cls,value):
+    def value_update(self,value):
         if value == 'T_shed2':
-            a = cls.update_raw(cls,'T_shed2_l') 
-            a = cls.raw_to_eng(cls, 'T_shed2_l')
-            b = cls.update_raw(cls,'T_shed2_r')
-            b = cls.raw_to_eng(cls, 'T_shed2_r')
+            a = self.update_raw(self,'T_shed2_l') 
+            a = self.raw_to_eng(self, 'T_shed2_l')
+            b = self.update_raw(self,'T_shed2_r')
+            b = self.raw_to_eng(self, 'T_shed2_r')
             L2 = float(a)#.input_eng['T_shed2_l'])
             R2 = float(b)#.input_eng['T_shed2_r'])
-            cls.input_eng['T_shed2'] = (L2+R2)/2
-            cls.display_values.update({value : str(round(cls.input_eng[value],2)) + u'\N{DEGREE SIGN}' + "C"})
+            self.input_eng['T_shed2'] = (L2+R2)/2
+            self.display_values.update({value : str(round(self.input_eng[value],2)) + u'\N{DEGREE SIGN}' + "C"})
         elif value == 'T_shed3':
-            a = cls.update_raw(cls,'T_shed3_l')
-            a = cls.raw_to_eng(cls, 'T_shed3_l')
-            b = cls.update_raw(cls,'T_shed3_r')
-            b = cls.raw_to_eng(cls, 'T_shed3_r')
+            a = self.update_raw(self,'T_shed3_l')
+            a = self.raw_to_eng(self, 'T_shed3_l')
+            b = self.update_raw(self,'T_shed3_r')
+            b = self.raw_to_eng(self, 'T_shed3_r')
             L3 = float(a)#.input_eng['T_shed2_l'])
             R3 = float(b)#.input_eng['T_shed2_r'])
-            cls.input_eng['T_shed3']= (L3+R3)/2
-            cls.display_values.update({value : str(round(cls.input_eng[value],2)) + u'\N{DEGREE SIGN}' + "C"})
+            self.input_eng['T_shed3']= (L3+R3)/2
+            self.display_values.update({value : str(round(self.input_eng[value],2)) + u'\N{DEGREE SIGN}' + "C"})
         elif "Flowmeter" in value:
-            flowmeter_value_raw = cls.update_raw(cls,value)
-            cls.input_eng[value] = cls.raw_to_eng(cls,value)
-            cls.display_values[value] = "Flow rate \n" + str(cls.input_eng[value]) + " GPM"
+            flowmeter_value_raw = self.update_raw(self,value)
+            self.input_eng[value] = self.raw_to_eng(self,value)
+            self.display_values[value] = "Flow rate \n" + str(self.input_eng[value]) + " GPM"
         else:
-            cls.input_eng[value] = cls.raw_to_eng(cls, value)
-            cls.display_values[value] = "Water Temp :" + str(cls.input_eng[value])
+            self.input_eng[value] = self.raw_to_eng(self, value)
+            self.display_values[value] = "Water Temp :" + str(self.input_eng[value])
     
     
     @classmethod
-    def update(cls, value):  
+    def update(self, value):  
         if update_all_io is True:
-            for key in cls.display_values:
-                cls.value_update(cls,key)
+            for key in self.display_values:
+                self.value_update(self,key)
         else:
-            cls.value_update(cls,value)
+            self.value_update(self,value)
 
     def __init__(self, value):
         self.value = value

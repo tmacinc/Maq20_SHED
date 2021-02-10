@@ -27,13 +27,9 @@ app.config['DEBUG'] = True
 
 with open('config.json') as json_file:
     settings = json.load(json_file)
-<<<<<<< HEAD
 with open('shed_status.json') as json_file:
     shed_status = json.load(json_file)
 #socketio = SocketIO(app)
-=======
-
->>>>>>> maq20_SHED/main
 daq = daq.dataforth(settings)
 
 
@@ -57,8 +53,9 @@ for channel in variables['daq_channels']:
 for key in settings['system_variables']:
     variables['vars_eng'][key] = 12.34
 calibration = settings["calibration"]
-alarms = settings["alarm"]
-shed_control = 0
+variables["var_sys"] = {"SHED1": "off", "SHED2": "off", "SHED3": "off"} ## parse in from JSON file
+
+
 
 
 
@@ -119,7 +116,7 @@ def update_daq_variables(data):                                 # updates the va
     temp = auxiliary_calculations.raw_to_eng(variables['vars_raw'])
     for key in temp.keys():
         variables['vars_eng'][key] = temp[key]
-
+    
 def update_calculated_variables():
     variables["vars_eng"]["T_shed2"] = round((variables["vars_eng"]["T_shed2_l"] + variables["vars_eng"]["T_shed2_r"] / 2), 2)
     variables["vars_eng"]["T_shed3"] = round((variables["vars_eng"]["T_shed3_l"] + variables["vars_eng"]["T_shed3_r"] / 2), 2)
@@ -154,15 +151,29 @@ def background_tasks(queue=Queue):
             if not queue.empty(): # process queue
                 task = queue.get()
                 for key in task.keys():
+                    # add if key == "system"
                     if key == "write_channels":
-                        daq.write_channels(task[key])
+                        if key in variables['daq_channels']:
+                            daq.write_channels(task[key])
+                        elif key in variables['var_sys']:
+                            update_system_variable(task[key])
+                            print(variables["var_sys"])
             t_now = datetime.now()
             sleep(0.01)
         t_next = t_next + timedelta(seconds=1)              # runs every 1 second (Slower tasks, reading daq etc)
         t_now = datetime.now()
         read_daq()
         update_calculated_variables()
+        #check alarms
+        #control algorithm -> call daq.write_channels()
 
+
+def update_system_variable(task):
+    for key in task.key():
+        if variables["var_sys"][key] == "off": 
+            variables["var_sys"][key] = "precondition"
+        else:
+            variables["var_sys"][key] = "off"
 #--------------------- Initialize background thread --------------------------------------------------------------------
 
 
