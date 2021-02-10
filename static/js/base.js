@@ -1,5 +1,5 @@
 
-var gauge_vars = ["T_shed3_hot", "T_shed3_cold", "T_shed3"]
+var gauge_vars = ["Flowmeter_main_hot", "Flowmeter_shed3_cold", "Flowmeter_shed3_hot"]
 
 //Get current values from server and update display. Activated at interval as set in document.ready function
 function update_page_data(allElements, data, chart, options){
@@ -15,21 +15,20 @@ function update_page_data(allElements, data, chart, options){
             var parsed_data = response.ajax_data;
             console.log(parsed_data);
             for (var i in parsed_data) {
+                var k = 0;
                 for (var j in gauge_vars){
-                    var k = 0;
-                    console.log(gauge_vars[k])
                     if (i == gauge_vars[j]) {
                         data.setValue(k, 1, parsed_data[i]);
                         chart.draw(data, options);
                     }
-                    console.log(parsed_data)
                 if (parsed_data[i] != "chan_name_error"){
                 number_received = parsed_data[i];
                 $('#' + i).html(number_received);               // update value at current id
                 $('#' + i).addClass('bold');                    // bold numbers when they are updated
                 //changeBackgroundColor("#" + i, number_received);// change background color based on value for alarming reasons
-                k += 1;
-            }}}
+            } k += 1;
+        }             
+        }
         }
     })
 }
@@ -45,6 +44,7 @@ function senddata(data){
         },
     })
 }
+
 
 // Change the background color based on the temperature value, could use range parameter for each value. eg, get info from config file on server for each variable, alarm enabled, alarm status, range high, range low.
 function changeBackgroundColor(input, value){
@@ -126,16 +126,17 @@ function documentReady(){
 
   var data = google.visualization.arrayToDataTable([
     ['Label', 'Value'],
-    ['T Shed3 Hot', 80],
-    ['T Shed3 Cold', 55],
-    ['T Shed 3', 68]
+    ['Flow rate\nShed3 Hot', 5],
+    ['Flow rate\nShed3 Cold', 5],
+    ['Flow rate\nmain hot', 5]
   ]);
   var options = {
-    width: 400, height: 120,
-    redFrom: 90, redTo: 95,
-    yellowFrom:75, yellowTo: 90,
-    minorTicks: 5, max: 150,
-    yellowColor: '#109618'
+    width: 120, height: 500,
+    yellowFrom: 0, yellowTo: 4,
+    greenFrom:4, greenTo: 6,
+    redFrom:6, redTo: 10,
+    minorTicks: 5, max: 10,
+    //yellowColor: '#109618'
   };
   var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
   chart.draw(data, options);

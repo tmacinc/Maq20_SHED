@@ -1,0 +1,102 @@
+{
+    "SHED_status":{
+        "SHED1":{
+            "state": 0,
+            "active_config": {
+                "Exhaust_fan": 1,
+                "Pump_main_cold": 1,
+                "Valve_main_cold": 5,
+                "Pump_shed1_cold": 1,
+                "Valve_shed1_cold": 10
+            },
+            "inactive_config": {
+                "Pump_shed1_cold": 0,
+                "Valve_shed1_cold": 0
+            },
+            "alarm_config":{
+                "Exhaust_fan": 1,
+                "Pump_shed1_cold": 0,
+                "Valve_shed1_cold": 0
+            },
+            "shed_ready": {
+                "T_shed1_cold": 15,
+                "T_main_cold": 13,
+                "Flowmeter_main_cold": 4.5,
+                "Flowmeter_shed1_cold": 4.5
+            }
+        },
+        "SHED2": {
+            "state": 0,
+            "active_config": {
+                "Exhaust_fan": 1,
+                "Pump_main_cold": 1,
+                "Valve_main_cold": 5,
+                "Pump_shed2_cold": 1,
+                "Valve_shed2_cold": 10,
+                "Pump_main_hot": 1,
+                "Valve_main_hot": 5,
+                "Pump_shed2_hot": 1,
+                "Valve_shed2_hot": 10
+            },
+            "inactive_config": {
+                "Pump_shed2_cold": 0,
+                "Valve_shed2_cold": 0,
+                "Pump_shed2_hot": 0,
+                "Valve_shed2_hot": 0
+            },
+            "alarm_config":{
+                "Exhaust_fan": 1,
+                "Exhaust_damper": 1,
+                "Exhaust_shed2": 1,
+                "Pump_shed2_hot": 0,
+                "Valve_shed2_hot": 0,
+                "Pump_shed2_cold": 0,
+                "Valve_shed2_cold": 0,
+                "Door_shed2_seal": 0 
+            },
+            "shed_ready": {
+                "T_shed2_cold": 15,
+                "T_main_cold": 13,
+                "Flowmeter_main_cold": 4.5,
+                "Flowmeter_shed2_cold": 4.5,
+                "T_shed2_hot": 50,
+                "T_main_hot": 55,
+                "Flowmeter_main_hot": 4.5,
+                "Flowmeter_shed2_hot": 4.5
+            }
+        },
+        "SHED3":{
+            "state": 0,
+            "active_config": {
+                "Exhaust_fan": 1,
+                "Pump_main_hot": 1,
+                "Valve_main_hot": 0,
+                "Pump_shed3_hot": 1,
+                "Valve_shed3_hot": 10
+            },
+            "inactive_config": {
+                "Pump_shed1_cold": 1,
+                "Valve_shed1_cold": 10
+            },
+            "alarm_config": {
+                "Exhaust_fan": 1,
+                "Exhaust_damper": 1,
+                "Exhaust_shed3": 1,
+                "Pump_shed3_hot": 0,
+                "Valve_shed3_hot": 0,
+                "Pump_shed3_cold": 0,
+                "Valve_shed3_cold": 0,
+                "Door_shed3_seal": 0
+            },
+            "shed_ready":{
+                "T_shed2_hot": 50,
+                "T_main_hot": 55,
+                "Flowmeter_main_hot": 4.5,
+                "Flowmeter_shed2_hot": 4.5
+            }
+        }
+        }
+
+
+        
+    }

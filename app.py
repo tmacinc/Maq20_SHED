@@ -23,6 +23,8 @@ app.config['DEBUG'] = True
 
 with open('config.json') as json_file:
     settings = json.load(json_file)
+with open('shed_status.json') as json_file:
+    shed_status = json.load(json_file)
 #socketio = SocketIO(app)
 daq = daq.dataforth(settings)
 
@@ -34,6 +36,8 @@ variables = {}
 variables["daq_channels"] = []
 variables["vars_raw"] = {}
 variables["vars_eng"] = {}
+
+
 for key in settings["channel_map_inputs"]:
     variables['daq_channels'].append(key)
 for key in settings["channel_map_outputs"]:
@@ -42,9 +46,12 @@ for channel in variables['daq_channels']:
     variables["vars_raw"][channel] = 0
 for channel in variables['daq_channels']:
     variables['vars_eng'][channel] = 0
-variables['vars_eng']['T_shed2'] = 12.34
-variables['vars_eng']['T_shed3'] = 12.34
+for key in settings['system_variables']:
+    variables['vars_eng'][key] = 12.34
 calibration = settings["calibration"]
+alarms = settings["alarm"]
+shed_control = 0
+
 
 
 
@@ -92,12 +99,37 @@ def maq20_fetch_data():
 def read_daq(): # get current channel values from list in variables['vars_raw']
     channels = variables['daq_channels']
     data = daq.read_channels(channels)
-    update_variables(data)
+    update_daq_variables(data)
 
-def update_variables(data): # updates the variables dictionary with new values
+def update_daq_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
         variables['vars_raw'][key] = data[key]
-    variables['vars_eng'] = auxiliary_calculations.raw_to_eng(variables['vars_raw'])
+    temp = auxiliary_calculations.raw_to_eng(variables['vars_raw'])
+    for key in temp.keys():
+        variables['vars_eng'][key] = temp[key]
+
+def update_calculated_variables():
+    variables["vars_eng"]["T_shed2"] = round((variables["vars_eng"]["T_shed2_l"] + variables["vars_eng"]["T_shed2_r"] / 2), 2)
+    variables["vars_eng"]["T_shed3"] = round((variables["vars_eng"]["T_shed3_l"] + variables["vars_eng"]["T_shed3_r"] / 2), 2)
+
+def SHED_control(SHED):# Action when User Input toggles SHED(n) state
+    """
+    param: SHED(n) dictionary
+    return: output_dict -> to be used in daq_write() function
+    """
+    output_dict = {}
+    
+    if SHED_status[SHED]['state'] == 0:
+        SHED_status[SHED]['state'] = 1
+        output_dict  = SHED_status[SHED]['active_config']
+    elif SHED_status[SHED]['state'] == 1 or SHED_status[SHED]['state'] == 2:
+        SHED_status[SHED]['state'] = 0
+        output_dict = SHED_status[SHED]['inactive_config']
+    else: # SHED_status == 3 ##> Alarm function RESET ALARM and turn all function off
+        SHED_status[SHED]['state'] = 0
+        output_dict = SHED_status[SHED]['inactive_config']  
+    
+    return output_dict
 
 def background_tasks(queue=Queue): # Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
     print("Background thread started")
@@ -115,6 +147,7 @@ def background_tasks(queue=Queue): # Parallel function to the Flask functions. U
         t_next = t_next + timedelta(seconds=1)              # runs every 1 second
         t_now = datetime.now()
         read_daq()
+        update_calculated_variables()
 
 
 #--------------------- Initialize background thread and start flask app ------------------------------------------------
