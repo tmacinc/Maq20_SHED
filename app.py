@@ -1,4 +1,5 @@
 import daq
+from alarms import alarm
 from flask import Flask, render_template, jsonify, request
 from threading import Thread, Event, Lock
 from queue import Queue, Empty
@@ -34,6 +35,11 @@ for key in settings["channel_map_outputs"]:
 for channel in variables['daq_channels']:
     variables["vars_raw"][channel] = 0
 
+#------------------- Initialize alarms ---------------------------------------------------------------------------------
+
+alarms = []
+for key in settings['alarm']:
+    alarms.append(alarm(key, settings['alarm'][key])) 
 
 #------------------- Route Functions - Perform task when browser directs to link (serves html etc) ------------------------------------------
 
