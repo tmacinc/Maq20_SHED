@@ -29,7 +29,7 @@ def pulse_to_frequency(key, value):
 def frequency_to_flowrate(key, frequency):
     flowrate = round(frequency * 60 / calibration[key], 2)                    ## Hz / ppg = gal/min
     return flowrate
-def raw_to_eng(data):
+def raw_to_eng(data, calibration):
     """
     data is the dictionary passed from the daw during the input. 
     return: new_data dictionary with values changed from raw values to engineering values
@@ -38,10 +38,11 @@ def raw_to_eng(data):
     for key, value in data.items():
         if key.endswith("_l", 7,9) or key.endswith("_r", 7,9):
             new_data[key] = round(float(value*calibration[key]),2)
-        elif key.startswith("Flowmeter_"):
-            new_data[key] = frequency_to_flowrate(key,value)
+        #elif key.startswith("Flowmeter_"):
+        #    print(key, value)
+        #    new_data[key] = frequency_to_flowrate(key,value)
         else:
-            new_data[key] = round(value, 2)
+            new_data[key] = round(float(value), 2)
     return new_data
 
 def alarm_limit_check(var_eng_dict,alarm_dict):
