@@ -1,4 +1,4 @@
-demo = True   # bool
+demo = False   # bool
 if demo:
     import daq_demo as daq
 else:
@@ -43,7 +43,7 @@ for key in settings["channel_map_outputs"]:
     daq_channels.append(key)
 vars_raw = {}
 for channel in daq_channels:
-    vars_raw[channel] = channel
+    vars_raw[channel] = 0
 vars_eng = {}
 for channel in vars_raw.keys():
     vars_eng[channel] = vars_raw[channel]
@@ -109,7 +109,7 @@ def read_daq():                                             # get current channe
 def update_daq_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
         vars_raw[key] = data[key]
-    temp = auxiliary_calculations.raw_to_eng(vars_raw)
+    temp = auxiliary_calculations.raw_to_eng(vars_raw, calibration)
     for key in temp.keys():
         vars_eng[key] = temp[key]
 
