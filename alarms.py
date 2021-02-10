@@ -19,5 +19,5 @@ class alarm():
         else: # use reset to clear alarm on event for latching functionality
             pass
 
-    def reset_alarm(self):
+    def reset(self):
         self.state = 0
