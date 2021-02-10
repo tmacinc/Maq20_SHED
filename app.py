@@ -39,6 +39,7 @@ for channel in vars_raw.keys():
 vars_sys = {}
 for channel in settings['system_variables'].keys():
     vars_sys[channel] = settings['system_variables'][channel]
+calibration = settings["calibration"]
 
 #------------------- Initialize alarms ---------------------------------------------------------------------------------
 
@@ -69,7 +70,8 @@ def update_page_data():
     channels_requested = list(request.args.to_dict().keys())
     data = {}
     for channel in channels_requested:
-        data[channel] = vars_raw[channel]
+        if channel in vars_eng.keys():
+            data[channel] = vars_eng[channel]
     return jsonify(ajax_data=data)
 
 @app.route('/_set_control')                                 #Accepts requested control variable from user and sends values to background task.
