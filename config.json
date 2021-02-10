@@ -102,7 +102,8 @@
     },
     "system_variables": {
         "T_shed2" : 0,
-        "T_shed3": 0
+        "T_shed3": 0,
+        "SHED1_status": "off"
     },
     "calibration": {
         "T_shed2_l" : 78.6781311,

@@ -1,9 +1,9 @@
-demo = True   # bool
+demo = False   # bool
 if demo:
     import daq_demo as daq
 else:
      import daq
-
+from alarms import alarm
 from flask import Flask, render_template, jsonify, request
 from threading import Thread, Event, Lock
 from queue import Queue, Empty
@@ -27,42 +27,36 @@ app.config['DEBUG'] = True
 
 with open('config.json') as json_file:
     settings = json.load(json_file)
-<<<<<<< HEAD
 with open('shed_status.json') as json_file:
     shed_status = json.load(json_file)
 #socketio = SocketIO(app)
-=======
-
->>>>>>> maq20_SHED/main
 daq = daq.dataforth(settings)
 
 
 #----------------- Build variables dictionary - Can also have scales, eng units etc -----------------------------------
 ## convert this to class once finalized?
 
-variables = {}
-variables["daq_channels"] = []
-variables["vars_raw"] = {}
-variables["vars_eng"] = {}
-
-
+daq_channels = []
 for key in settings["channel_map_inputs"]:
-    variables['daq_channels'].append(key)
+    daq_channels.append(key)
 for key in settings["channel_map_outputs"]:
-    variables['daq_channels'].append(key)
-for channel in variables['daq_channels']:
-    variables["vars_raw"][channel] = 0
-for channel in variables['daq_channels']:
-    variables['vars_eng'][channel] = 0
-for key in settings['system_variables']:
-    variables['vars_eng'][key] = 12.34
+    daq_channels.append(key)
+vars_raw = {}
+for channel in daq_channels:
+    vars_raw[channel] = 0
+vars_eng = {}
+for channel in vars_raw.keys():
+    vars_eng[channel] = vars_raw[channel]
+vars_sys = {}
+for channel in settings['system_variables'].keys():
+    vars_sys[channel] = settings['system_variables'][channel]
 calibration = settings["calibration"]
-alarms = settings["alarm"]
-shed_control = 0
 
+#------------------- Initialize alarms ---------------------------------------------------------------------------------
 
-
-
+alarms = []
+for key in settings['alarm']:
+    alarms.append(alarm(key, settings['alarm'][key])) 
 
 #------------------- Route Functions - Perform task when browser directs to link (serves html etc) ------------------------------------------
 
@@ -87,9 +81,8 @@ def update_page_data():
     channels_requested = list(request.args.to_dict().keys())
     data = {}
     for channel in channels_requested:
-        if channel in variables['vars_eng'].keys():
-            data[channel] = variables['vars_eng'][channel]
-
+        if channel in vars_eng.keys():
+            data[channel] = vars_eng[channel]
     return jsonify(ajax_data=data)
 
 @app.route('/_set_control')                                 #Accepts requested control variable from user and sends values to background task.
@@ -108,21 +101,21 @@ def maq20_fetch_data():
 
 #--------------------- Regular functions - Can be used by routes, background thread etc. --------------------------------------------------------
 
-def read_daq():                                             # get current channel values from list in variables['vars_raw']
-    channels = variables['daq_channels']
+def read_daq():                                             # get current channel values from list in vars_raw
+    channels = daq_channels
     data = daq.read_channels(channels)
     update_daq_variables(data)
 
 def update_daq_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
-        variables['vars_raw'][key] = data[key]
-    temp = auxiliary_calculations.raw_to_eng(variables['vars_raw'])
+        vars_raw[key] = data[key]
+    temp = auxiliary_calculations.raw_to_eng(vars_raw, calibration)
     for key in temp.keys():
-        variables['vars_eng'][key] = temp[key]
+        vars_eng[key] = temp[key]
 
 def update_calculated_variables():
-    variables["vars_eng"]["T_shed2"] = round((variables["vars_eng"]["T_shed2_l"] + variables["vars_eng"]["T_shed2_r"] / 2), 2)
-    variables["vars_eng"]["T_shed3"] = round((variables["vars_eng"]["T_shed3_l"] + variables["vars_eng"]["T_shed3_r"] / 2), 2)
+    vars_eng["T_shed2"] = round((vars_eng["T_shed2_l"] + vars_eng["T_shed2_r"] / 2), 2)
+    vars_eng["T_shed3"] = round((vars_eng["T_shed3_l"] + vars_eng["T_shed3_r"] / 2), 2)
 
 def SHED_control(SHED):# Action when User Input toggles SHED(n) state
     """
@@ -164,7 +157,6 @@ def background_tasks(queue=Queue):
         update_calculated_variables()
 
 #--------------------- Initialize background thread --------------------------------------------------------------------
-
 
 queue = Queue()
 background = Thread(target=background_tasks, args=(queue,))

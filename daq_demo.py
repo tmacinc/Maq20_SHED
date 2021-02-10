@@ -66,7 +66,7 @@ class dataforth():
             'Flowmeter_shed2_cold' : random.uniform(5, 10),
             'Flowmeter_main_hot' : random.uniform(1, 10),
             'Flowmeter_main_cold' : random.uniform(5, 8),
-            'Flowmeter_shed1_hot' : random.uniform(5, 9),1
+            'Flowmeter_shed1_hot' : random.uniform(5, 9),
             'Flowmeter_shed1_cold' : random.uniform(10, 16),
             'T_shed3_hot' :  random.uniform(10, 65),
             'T_shed3_cold' : random.uniform(10, 65),
