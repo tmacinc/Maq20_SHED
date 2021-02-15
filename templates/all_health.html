@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="/static/styles/all_health.css">
+<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-linear-gauge.min.js"></script>
+<script src="static/js/base.js"></script>
+<body>
+<h2> Permeation SHED Monitoring and Control</h2>
+<p>This page includes the monitoring of all 3 SHEDs as well as control for SHED3</p>
+
+<div class="header">
+<h2>Main Flow</h2>
+<table>
+    <tr>
+        <table>
+            <tr>
+                <th rowspan="2">COLD</th>
+                <td>Pump 6</td>
+                <td>Flow Rate 6</td>
+                <td>Flow Temp. 6</td>
+                <td>Valve Position</td>
+            </tr>
+            <tr>
+                <td><div id ="Pump_main_cold">0</div></td>
+                <td><div id="Flowmeter_main_cold">0</div></td>
+                <td><div id="T_main_cold">0</div></td>
+                <td><div id="Valve_main_cold">0</div></td>
+            </tr>
+
+        </table>
+        
+        
+    </tr>
+
+
+    
+</table>
+
+</div>
+
+
+
+
+
+</body>
+
+
+{% endblock %}

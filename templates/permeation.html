@@ -8,6 +8,22 @@
 <div class="permeation_grid">
 <div class="permeation_overview">
     <h3>Main Flow</h3>
+    <table>
+        <tr>
+            <th rowspan="2">COLD</th>
+            <td>Pump 6</td>
+            <td>Flow Rate 6</td>
+            <td>Flow Temp. 6</td>
+            <td>Valve Position</td>
+        </tr>
+        <tr>
+            <td><div id ="Pump_main_cold">0</div></td>
+            <td><div id="Flowmeter_main_cold"> 0</div> </td>
+            <td><div id="T_main_cold">0</div></td>
+            <td><div id="Valve_main_cold">0</div></td>
+        </tr>
+
+    </table>
     <div class="permeation_overview_hot inline">
         <div class="inline">    
             <div>Hot loop</div>
@@ -72,8 +88,8 @@
 </div>
 <div class="permeation_gauges">
     <div class="inputgroup">
-        <input id="input_SHED3" name="SHED3_state" type="checkbox"/>
-        <label for="input_SHED3">SHED3</label>
+        <input id="input_SHED3" name="input_SHED3_state" type="checkbox"/>
+        <label for="input_SHED3">SHED3 on/off</label>
     </div>
 
     <div id="chart_div" style="width: 400px; height: 120px;"></div>

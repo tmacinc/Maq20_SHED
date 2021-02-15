@@ -1,4 +1,4 @@
-demo = False   # bool
+demo = True   # bool
 if demo:
     import daq_demo as daq
 else:
@@ -11,6 +11,7 @@ from flask_socketio import SocketIO, emit
 import json
 from time import sleep
 from datetime import datetime, timedelta
+from simple_pid import PID
 
 #import eventlet                # If using sockets. Otherwise sockets will use long polling (cross platform)
 from waitress import serve      # Production server for windows applications
@@ -51,14 +52,15 @@ vars_sys = {}
 for channel in settings['system_variables'].keys():
     vars_sys[channel] = settings['system_variables'][channel]
 calibration = settings["calibration"]
-<<<<<<< HEAD
-variables["var_sys"] = {"SHED1": "off", "SHED2": "off", "SHED3": "off"} ## parse in from JSON file
+#var_sys = {"SHED1": {"status": "off"}, "SHED2": {"status": "off"}, "SHED3": {"status": "off"}} ## parse in from JSON file
+
+pid_SHED3 = PID(vars_sys["SHED3"]["PID"]["p"],vars_sys["SHED3"]["PID"]["i"], vars_sys["SHED3"]["PID"]["d"], vars_sys["SHED3"]["set_temp"])
+pid_SHED3.output_limits =  (vars_sys["SHED3"]["PID"]["limits"]["low"],vars_sys["SHED3"]["PID"]["limits"]["high"])
 
 
-
-
-=======
->>>>>>> 1d233cda112f1357b57a27ae0a67d6975915e5a8
+def pid_control(pid, current_temp, set_temp):
+    pid.setpoint = set_temp
+    return pid(current_temp)
 
 #------------------- Initialize alarms ---------------------------------------------------------------------------------
 
@@ -81,6 +83,10 @@ def maq20_overview():
 @app.route('/permeation.html')
 def permeation():
     return render_template('permeation.html')
+
+@app.route('/all_health.html')
+def all_health():
+    return render_template("all_health.html")
 
 #------------------- Data routes used by JQuery ------------------------------------------------------------------------
 
@@ -119,17 +125,20 @@ def update_daq_variables(data):                                 # updates the va
         vars_raw[key] = data[key]
     temp = auxiliary_calculations.raw_to_eng(vars_raw, calibration)
     for key in temp.keys():
-<<<<<<< HEAD
-        variables['vars_eng'][key] = temp[key]
-    
-=======
         vars_eng[key] = temp[key]
 
->>>>>>> 1d233cda112f1357b57a27ae0a67d6975915e5a8
 def update_calculated_variables():
     vars_eng["T_shed2"] = round((vars_eng["T_shed2_l"] + vars_eng["T_shed2_r"] / 2), 2)
     vars_eng["T_shed3"] = round((vars_eng["T_shed3_l"] + vars_eng["T_shed3_r"] / 2), 2)
 
+def update_remote_request():    
+    if vars_raw["Request_shed1"] == 1:
+        vars_sys["SHED1"]["request"] = "on"
+    if vars_raw["Request_shed2"] == 1:
+        vars_sys["SHED2"]["request"] = "on"
+    if vars_raw["Request_shed3"] == 1:
+        vars_sys["SHED3"]["request"] = "on"
+ 
 def SHED_control(SHED):# Action when User Input toggles SHED(n) state
     """
     param: SHED(n) dictionary
@@ -137,15 +146,15 @@ def SHED_control(SHED):# Action when User Input toggles SHED(n) state
     """
     output_dict = {}
     
-    if SHED_status[SHED]['state'] == 0:
-        SHED_status[SHED]['state'] = 1
-        output_dict  = SHED_status[SHED]['active_config']
-    elif SHED_status[SHED]['state'] == 1 or SHED_status[SHED]['state'] == 2:
-        SHED_status[SHED]['state'] = 0
-        output_dict = SHED_status[SHED]['inactive_config']
+    if vars_sys[SHED]['state'] == 0:
+        vars_sys[SHED]['state'] = 1
+        output_dict  = vars_sys[SHED]['active_config']
+    elif vars_sys[SHED]['state'] == 1 or vars_sys[SHED]['state'] == 2:
+        vars_sys[SHED]['state'] = 0
+        output_dict = vars_sys[SHED]['inactive_config']
     else: # SHED_status == 3 ##> Alarm function RESET ALARM and turn all function off
-        SHED_status[SHED]['state'] = 0
-        output_dict = SHED_status[SHED]['inactive_config']  
+        vars_sys[SHED]['state'] = 0
+        output_dict = vars_sys[SHED]['inactive_config']  
     
     return output_dict
 
@@ -162,27 +171,43 @@ def background_tasks(queue=Queue):
                 for key in task.keys():
                     # add if key == "system"
                     if key == "write_channels":
-                        if key in variables['daq_channels']:
+                        if key in daq_channels:
                             daq.write_channels(task[key])
-                        elif key in variables['var_sys']:
+                        elif "SHED" in key:
                             update_system_variable(task[key])
-                            print(variables["var_sys"])
+                            
             t_now = datetime.now()
             sleep(0.01)
         t_next = t_next + timedelta(seconds=1)              # runs every 1 second (Slower tasks, reading daq etc)
         t_now = datetime.now()
         read_daq()
         update_calculated_variables()
+        update_remote_request()
         #check alarms
         #control algorithm -> call daq.write_channels()
 
 
 def update_system_variable(task):
     for key in task.key():
-        if variables["var_sys"][key] == "off": 
-            variables["var_sys"][key] = "precondition"
+        if var_sys[key]["request"] == "off" and var_sys[key]["state"] != "alarm": 
+            var_sys[key]["request"] = "on"
+            daq.write_channels(var_sys[key]["state_settings"]["on"])
+            print(var_sys)
         else:
-            variables["var_sys"][key] = "off"
+            var_sys[key]["request"] = "off"
+            daq.write_channels(var_sys[key]["state_settings"]["off"])
+            if var_sys["SHED1"]["request"] == var_sys["SHED2"]["request"] == var_sys["SHED3"]["request"]:
+                daq.write_channels(var_sys["all_off"])
+            print(var_sys)
+
+def system_operation():
+    write_to_daq = {}
+    for key in var_sys.keys():
+        if var_sys == "off":
+            write_to_daq = var_sys[key]["state_settings"]["off"]
+        else:
+            pass
+
 #--------------------- Initialize background thread --------------------------------------------------------------------
 
 queue = Queue()
