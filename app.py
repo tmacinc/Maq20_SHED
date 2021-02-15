@@ -76,7 +76,7 @@ def update_page_data():
     return jsonify(ajax_data=data)
 
 @app.route('/_set_variable_value')                                 #Accepts requested control variable from user and sends values to background task.
-def set_control():
+def set_variable_value():
     variable_to_set = request.args.to_dict()
     variable = list(request.args.to_dict().keys())
     variable_name = variable[0]
