@@ -47,7 +47,7 @@ alarms = []
 for key in settings['alarm']:
     alarms.append(alarm(key, settings['alarm'][key])) 
 
-#------------------- Route Functions - Perform task when browser directs to link (serves html etc) ------------------------------------------
+#------------------- Route Functions - Perform task when browser directs to link (serves html etc) ---------------------
 
 #------------------- Html routes ---------------------------------------------------------------------------------------
 
@@ -72,6 +72,7 @@ def update_page_data():
     for channel in channels_requested:
         if channel in vars_eng.keys():
             data[channel] = vars_eng[channel]
+    #print(channels_requested)
     return jsonify(ajax_data=data)
 
 @app.route('/_set_control')                                 #Accepts requested control variable from user and sends values to background task.
@@ -93,11 +94,14 @@ def maq20_fetch_data():
 def read_daq():                                             # get current channel values from list in vars_raw
     channels = daq_channels
     data = daq.read_channels(channels)
+    print(data)
     update_variables(data)
 
 def update_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
         vars_raw[key] = data[key]
+    for key in data.keys():
+        vars_eng[key] = data[key]                           # this should use a unit conversion function to get eng units.
 
 #--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, calling threads with control functions etc. Will run without client connected.
 

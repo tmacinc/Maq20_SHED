@@ -1,21 +1,21 @@
 
 
 //Get current values from server and update display. Activated at interval as set in document.ready function
-function update_page_data(allElements){
-    var vardict = {};
-    for (var index = 0; index < allElements.length; index++){  // build dict object of name: value, to send to server.
-        vardict[allElements[index]] = allElements[index];
+function update_page_data(variables_to_update){
+    var variables_to_update_dict = {};
+    for (var index = 0; index < variables_to_update.length; index++){  // build dict object of name: value, to send to server.
+        variables_to_update_dict[variables_to_update[index]] = variables_to_update[index];
     };
     $.ajax({
         url: $SCRIPT_ROOT + "/_update_page_data",
         type: "GET",
-        data: vardict,
+        data: variables_to_update_dict,
         success: function(response){
-            var parsed_data = response.ajax_data;
-            console.log(parsed_data);
-            for (var i in parsed_data) {
-                number_received = parsed_data[i];
-                $('#' + i).html(number_received);               // update value at current id
+            var updated_variables = response.ajax_data;
+            console.log(updated_variables);
+            for (var i in updated_variables) {
+                updated_variable = updated_variables[i];
+                $('#' + i).html(updated_variable);               // update value at current id
                 $('#' + i).addClass('bold');                    // bold numbers when they are updated
                 //changeBackgroundColor("#" + i, number_received);// change background color based on value for alarming reasons
             }
