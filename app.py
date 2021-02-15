@@ -99,7 +99,7 @@ def update_variables(data):                                 # updates the variab
     for key in data.keys():
         vars_raw[key] = data[key]
 
-#--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
+#--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, calling threads with control functions etc. Will run without client connected.
 
 def background_tasks(queue=Queue): 
     print("Background thread started")

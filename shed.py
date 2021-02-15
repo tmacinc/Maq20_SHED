@@ -11,5 +11,4 @@ class shed():
     def change_state(self, mode):
         # exit current mode
         # enter new mode
-
-    
+        pass
