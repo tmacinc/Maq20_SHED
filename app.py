@@ -65,24 +65,24 @@ def permeation():
 
 #------------------- Data routes used by JQuery ------------------------------------------------------------------------
 
-@app.route('/_update_page_data')                            #Accepts variables list from js and returns current values. 
+@app.route('/_update_page_variables')                            #Accepts variables list from js and returns current values. 
 def update_page_data():
-    channels_requested = list(request.args.to_dict().keys())
+    variables_requested = list(request.args.to_dict().keys())
     data = {}
-    for channel in channels_requested:
-        if channel in vars_eng.keys():
-            data[channel] = vars_eng[channel]
-    #print(channels_requested)
+    for variable in variables_requested:
+        if variable in vars_eng.keys():
+            data[variable] = vars_eng[variable]
+    #print(variables_requested)
     return jsonify(ajax_data=data)
 
-@app.route('/_set_control')                                 #Accepts requested control variable from user and sends values to background task.
+@app.route('/_set_variable_value')                                 #Accepts requested control variable from user and sends values to background task.
 def set_control():
-    msg = request.args.to_dict()
-    channels = list(request.args.to_dict().keys())
-    channel_name = channels[0]
-    print("Received request to update setting: " + channel_name + " to new value: " + msg[channel_name])
-    queue.put({"write_channels": msg})
-    return jsonify(ajax_response="Received channel -> value: " + str(channel_name) + " -> " + str(msg[channel_name]))
+    variable_to_set = request.args.to_dict()
+    variable = list(request.args.to_dict().keys())
+    variable_name = variable[0]
+    print("Received request to update setting: " + variable_name + " to new value: " + variable_to_set[variable_name])
+    queue.put({"write_channels": variable_to_set})
+    return jsonify(ajax_response="Received variable -> value: " + str(variable_name) + " -> " + str(variable_to_set[variable_name]))
 
 @app.route('/_maq20_fetch_data')                            #Used for maq20_overview.html - not super useful outside of an overview
 def maq20_fetch_data():

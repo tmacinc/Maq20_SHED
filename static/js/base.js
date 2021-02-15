@@ -1,13 +1,13 @@
 
 
 //Get current values from server and update display. Activated at interval as set in document.ready function
-function update_page_data(variables_to_update){
+function update_page_variables(variables_to_update){
     var variables_to_update_dict = {};
     for (var index = 0; index < variables_to_update.length; index++){  // build dict object of name: value, to send to server.
         variables_to_update_dict[variables_to_update[index]] = variables_to_update[index];
     };
     $.ajax({
-        url: $SCRIPT_ROOT + "/_update_page_data",
+        url: $SCRIPT_ROOT + "/_update_page_variables",
         type: "GET",
         data: variables_to_update_dict,
         success: function(response){
@@ -24,11 +24,11 @@ function update_page_data(variables_to_update){
 }
 
 // Ajax send changed input to server
-function senddata(data){
+function set_variable_value(variable_to_set){
     $.ajax({
         type: "GET",
-        url: "_set_control",
-        data: data,
+        url: "_set_variable_value",
+        data: variable_to_set,
         success: function(response){
             console.log(response)
         },
@@ -110,7 +110,7 @@ $(document).ready(function(){
     var variables = get_variables()
     
 // Set JQuery refresh interval.
-  setInterval(update_page_data, 1000, variables.Outputs)
+  setInterval(update_page_variables, 1000, variables.Outputs)
 
 // monitor inputs for changes, trying to use variables.Inputs to automatically work with changing html
     var input_string = generate_input_string(variables.Inputs)      // generate list of current inputs as a string to monitor for changes
@@ -128,7 +128,7 @@ $(document).ready(function(){
                 input_changed[input] = inputs_current[input];
             }
         }
-        senddata(input_changed)                                     // send new value to server
+        set_variable_value(input_changed)                                     // send new value to server
     })
 
 })
