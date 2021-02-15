@@ -68,7 +68,7 @@ alarms = []
 for key in settings['alarm']:
     alarms.append(alarm(key, settings['alarm'][key])) 
 
-#------------------- Route Functions - Perform task when browser directs to link (serves html etc) ------------------------------------------
+#------------------- Route Functions - Perform task when browser directs to link (serves html etc) ---------------------
 
 #------------------- Html routes ---------------------------------------------------------------------------------------
 
@@ -90,23 +90,24 @@ def all_health():
 
 #------------------- Data routes used by JQuery ------------------------------------------------------------------------
 
-@app.route('/_update_page_data')                            #Accepts variables list from js and returns current values. 
+@app.route('/_update_page_variables')                            #Accepts variables list from js and returns current values. 
 def update_page_data():
-    channels_requested = list(request.args.to_dict().keys())
+    variables_requested = list(request.args.to_dict().keys())
     data = {}
-    for channel in channels_requested:
-        if channel in vars_eng.keys():
-            data[channel] = vars_eng[channel]
+    for variable in variables_requested:
+        if variable in vars_eng.keys():
+            data[variable] = vars_eng[variable]
+    #print(variables_requested)
     return jsonify(ajax_data=data)
 
-@app.route('/_set_control')                                 #Accepts requested control variable from user and sends values to background task.
-def set_control():
-    msg = request.args.to_dict()
-    channels = list(request.args.to_dict().keys())
-    channel_name = channels[0]
-    print("Received request to update setting: " + channel_name + " to new value: " + msg[channel_name])
-    queue.put({"write_channels": msg})
-    return jsonify(ajax_response="Received channel -> value: " + str(channel_name) + " -> " + str(msg[channel_name]))
+@app.route('/_set_variable_value')                                 #Accepts requested control variable from user and sends values to background task.
+def set_variable_value():
+    variable_to_set = request.args.to_dict()
+    variable = list(request.args.to_dict().keys())
+    variable_name = variable[0]
+    print("Received request to update setting: " + variable_name + " to new value: " + variable_to_set[variable_name])
+    queue.put({"write_channels": variable_to_set})
+    return jsonify(ajax_response="Received variable -> value: " + str(variable_name) + " -> " + str(variable_to_set[variable_name]))
 
 @app.route('/_maq20_fetch_data')                            #Used for maq20_overview.html - not super useful outside of an overview
 def maq20_fetch_data():
@@ -118,7 +119,8 @@ def maq20_fetch_data():
 def read_daq():                                             # get current channel values from list in vars_raw
     channels = daq_channels
     data = daq.read_channels(channels)
-    update_daq_variables(data)
+    print(data)
+    update_variables(data)
 
 def update_daq_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
@@ -158,7 +160,7 @@ def SHED_control(SHED):# Action when User Input toggles SHED(n) state
     
     return output_dict
 
-#--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, control functions etc. Will run without client connected.
+#--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, calling threads with control functions etc. Will run without client connected.
 
 def background_tasks(queue=Queue): 
     print("Background thread started")
