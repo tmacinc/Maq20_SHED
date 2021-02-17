@@ -1,18 +1,10 @@
 
-var gauge_vars = ["Flowmeter_main_hot", "Flowmeter_shed3_cold", "Flowmeter_shed3_hot"]
 
 //Get current values from server and update display. Activated at interval as set in document.ready function
-<<<<<<< HEAD
-function update_page_data(allElements, data, chart, options){
-    var vardict = {};
-    for (var index = 0; index < allElements.length; index++){  // build dict object of name: value, to send to server.
-        vardict[allElements[index]] = allElements[index];
-=======
 function update_page_variables(variables_to_update){
     var variables_to_update_dict = {};
     for (var index = 0; index < variables_to_update.length; index++){  // build dict object of name: value, to send to server.
         variables_to_update_dict[variables_to_update[index]] = variables_to_update[index];
->>>>>>> upstream/main
     };
     $.ajax({
         url: $SCRIPT_ROOT + "/_update_page_variables",
@@ -26,9 +18,7 @@ function update_page_variables(variables_to_update){
                 $('#' + i).html(updated_variable);               // update value at current id
                 $('#' + i).addClass('bold');                    // bold numbers when they are updated
                 //changeBackgroundColor("#" + i, number_received);// change background color based on value for alarming reasons
-            } k += 1;
-        }             
-        }
+            }
         }
     })
 }
@@ -44,7 +34,6 @@ function set_variable_value(variable_to_set){
         },
     })
 }
-
 
 // Change the background color based on the temperature value, could use range parameter for each value. eg, get info from config file on server for each variable, alarm enabled, alarm status, range high, range low.
 function changeBackgroundColor(input, value){
@@ -73,10 +62,8 @@ function changeBackgroundColor(input, value){
             }else{
                 outputs.push(variable);
             }}
-
-        var variables = {"Inputs": inputs, "Outputs": outputs} 
-        console.log(variables)             // return object {dict} on input and output names
-
+        var variables = {"Inputs": inputs, "Outputs": outputs}              // return object {dict} on input and output names
+        console.log(variables)
         return variables;
       }
 
@@ -109,12 +96,9 @@ function changeBackgroundColor(input, value){
         return input_values
     }
 
-google.charts.load('current', {'packages':['gauge']});
-google.charts.setOnLoadCallback(documentReady);
-
 //Runs once the document is ready and published in the browser.
-//$(document).ready(function(){
-function documentReady(){
+$(document).ready(function(){
+
 // update navbar with indicator of current page (currently color, can increase font etc.)
     $("[href]").each(function() {
         if (this.href == window.location.href) {
@@ -122,30 +106,8 @@ function documentReady(){
         }
     });
 
-//gauges
-
-//function drawChart() {
-
-  var data = google.visualization.arrayToDataTable([
-    ['Label', 'Value'],
-    ['Flow rate\nShed3 Hot', 5],
-    ['Flow rate\nShed3 Cold', 5],
-    ['Flow rate\nmain hot', 5]
-  ]);
-  var options = {
-    width: 120, height: 500,
-    yellowFrom: 0, yellowTo: 4,
-    greenFrom:4, greenTo: 6,
-    redFrom:6, redTo: 10,
-    minorTicks: 5, max: 10,
-    //yellowColor: '#109618'
-  };
-  var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
-  chart.draw(data, options);
-
 // get list of variables used by page (tags which have and id="")
     var variables = get_variables()
-    console.log(variables)
     
 // Set JQuery refresh interval.
   setInterval(update_page_variables, 1000, variables.Outputs)
@@ -169,4 +131,4 @@ function documentReady(){
         set_variable_value(input_changed)                                     // send new value to server
     })
 
-}//)
+})

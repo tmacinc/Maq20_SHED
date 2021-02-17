@@ -1,4 +1,4 @@
-demo = True   # bool
+demo = False   # bool
 if demo:
     import daq_demo as daq
 else:
@@ -28,8 +28,7 @@ app.config['DEBUG'] = True
 
 with open('config.json') as json_file:
     settings = json.load(json_file)
-with open('shed_status.json') as json_file:
-    shed_status = json.load(json_file)
+
 #socketio = SocketIO(app)
 daq = daq.dataforth(settings)
 
@@ -119,8 +118,8 @@ def maq20_fetch_data():
 def read_daq():                                             # get current channel values from list in vars_raw
     channels = daq_channels
     data = daq.read_channels(channels)
-    print(data)
-    update_variables(data)
+    #print(data)
+    update_daq_variables(data)
 
 def update_daq_variables(data):                                 # updates the variables dictionary with new values
     for key in data.keys():
@@ -137,7 +136,8 @@ def update_remote_request():
     if vars_raw["Request_shed1"] == 1:
         vars_sys["SHED1"]["request"] = "on"
     if vars_raw["Request_shed2"] == 1:
-        vars_sys["SHED2"]["request"] = "on"
+    #     vars_sys["SHED2"]["request"] = "on"
+        pass
     if vars_raw["Request_shed3"] == 1:
         vars_sys["SHED3"]["request"] = "on"
  
@@ -191,24 +191,26 @@ def background_tasks(queue=Queue):
 
 def update_system_variable(task):
     for key in task.key():
-        if var_sys[key]["request"] == "off" and var_sys[key]["state"] != "alarm": 
-            var_sys[key]["request"] = "on"
-            daq.write_channels(var_sys[key]["state_settings"]["on"])
-            print(var_sys)
+        if vars_sys[key]["request"] == "off" and vars_sys[key]["state"] != "alarm": 
+            vars_sys[key]["request"] = "on"
+            vars_sys[key]["state"] = "on"
+            daq.write_channels(vars_sys[key]["state_settings"]["on"])
+            #print(vars_sys)
         else:
-            var_sys[key]["request"] = "off"
-            daq.write_channels(var_sys[key]["state_settings"]["off"])
-            if var_sys["SHED1"]["request"] == var_sys["SHED2"]["request"] == var_sys["SHED3"]["request"]:
-                daq.write_channels(var_sys["all_off"])
-            print(var_sys)
+            vars_sys[key]["request"] = "off"
+            daq.write_channels(vars_sys[key]["state_settings"]["off"])
+            if vars_sys["SHED1"]["request"] == vars_sys["SHED2"]["request"] == vars_sys["SHED3"]["request"]:
+                daq.write_channels(vars_sys["all_off"])
+            #print(vars_sys)
 
-def system_operation():
-    write_to_daq = {}
-    for key in var_sys.keys():
-        if var_sys == "off":
-            write_to_daq = var_sys[key]["state_settings"]["off"]
-        else:
-            pass
+# def system_operation():
+#     write_to_daq_dict = {}
+#     for key in vars_sys.keys():
+#         if vars_sys[key][request] == "off":
+#             write_to_daq_dict = vars_sys[key]["state_settings"]["off"]
+#         else:
+#             pass
+    
 
 #--------------------- Initialize background thread --------------------------------------------------------------------
 

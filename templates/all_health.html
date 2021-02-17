@@ -9,34 +9,188 @@
 <h2> Permeation SHED Monitoring and Control</h2>
 <p>This page includes the monitoring of all 3 SHEDs as well as control for SHED3</p>
 
-<div class="header">
-<h2>Main Flow</h2>
+<div class="main_flow">
 <table>
-    <tr>
-        <table>
-            <tr>
-                <th rowspan="2">COLD</th>
-                <td>Pump 6</td>
-                <td>Flow Rate 6</td>
-                <td>Flow Temp. 6</td>
-                <td>Valve Position</td>
-            </tr>
-            <tr>
-                <td><div id ="Pump_main_cold">0</div></td>
-                <td><div id="Flowmeter_main_cold">0</div></td>
-                <td><div id="T_main_cold">0</div></td>
-                <td><div id="Valve_main_cold">0</div></td>
-            </tr>
+    <thead>
+        <tr>
+            <th colspan="8">
+                <h1>Main Flow</h1>
+            </th>
+        </tr>
+        <tr>
+            <th class="cold_head" colspan="4">Cold</th>
+            <th class="hot_head" colspan="4">Hot</th>
+        </tr>
+        <tr>
+            <th>Pump </th>
+            <th>Flow Rate</th>
+            <th>Flow Temp.</th>
+            <th>Valve Position</th>
+            <th>Pump</th>
+            <th>Flow Rate</th>
+            <th>Flow Temp.</th>
+            <th>Valve Position</th> 
+        </tr>
+        <tr>
+            <td id ="Pump_main_cold">0</td>
+            <td id="Flowmeter_main_cold">0</td>
+            <td id="T_main_cold">0</td>
+            <td id="Valve_main_cold">0</td>
+            <td id ="Pump_main_hot">0</td>
+            <td id="Flowmeter_main_hot">0</td>
+            <td id="T_main_hot">0</td>
+            <td id="Valve_main_hot">0</td>
 
-        </table>
-        
-        
-    </tr>
-
-
-    
+        </tr>
+    </thead>       
 </table>
+</div>
 
+<div class="row">
+    <div class="column"> <!--  SHED 1 Control and Monitoring-->
+        <div class="inputgroup">
+            <input id="input_SHED1" name="input_SHED1_state" type="checkbox"/>
+            <label for="input_SHED1">SHED1 on/off</label>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="4">
+                        <h1>SHED1 Flow Monitoring</h1>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="cold_head" colspan="4">Cold</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id ="Pump_shed1_cold">0</td>
+                    <td id="Flowmeter_shed1_cold">0</td>
+                    <td id="T_shed1_cold">0</td>
+                    <td id="Valve_shed1_cold">0</td>       
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <th class="hot_head" colspan="4">Hot</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id ="Pump_shed1_hot">0</td>
+                    <td id="Flowmeter_shed1_hot">0</td>
+                    <td id="T_shed1_hot">0</td>
+                    <td id="Valve_shed1_hot">0</td>       
+                </tr>
+            </thead>            
+        </table>
+
+    </div>
+    <div class="column">  <!--  SHED 2 Control and Monitoring-->
+        <div class="inputgroup">
+        <input id="input_SHED2" name="input_SHED2_state" type="checkbox"/>
+        <label for="input_SHED2">SHED2 on/off</label>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="4">
+                        <h1>SHED2 Flow Monitoring</h1>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="cold_head" colspan="4">Cold</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id ="Pump_shed2_cold">0</td>
+                    <td id="Flowmeter_shed2_cold">0</td>
+                    <td id="T_shed2_cold">0</td>
+                    <td id="Valve_shed2_cold">0</td>       
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <th class="hot_head" colspan="4">Hot</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id ="Pump_shed2_hot">0</td>
+                    <td id="Flowmeter_shed2_hot">0</td>
+                    <td id="T_shed2_hot">0</td>
+                    <td id="Valve_shed2_hot">0</td>       
+                </tr>
+            </thead>            
+        </table>
+
+    </div>
+    <div class="column"> <!--  SHED 3 Control and Monitoring-->
+        <div class="inputgroup">
+        <input id="input_SHED3" name="input_SHED3_state" type="checkbox"/>
+        <label for="input_SHED3">SHED3 on/off</label>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="4">
+                        <h1>SHED3 Flow Monitoring</h1>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="cold_head" colspan="4">Cold</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id ="Pump_shed3_cold">0</td>
+                    <td id="Flowmeter_shed3_cold">0</td>
+                    <td id="T_shed3_cold">0</td>
+                    <td id="Valve_shed3_cold">0</td>       
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <th class="hot_head" colspan="4">Hot</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id ="Pump_shed3_hot">0</td>
+                    <td id="Flowmeter_shed3_hot">0</td>
+                    <td id="T_shed3_hot">0</td>
+                    <td id="Valve_shed3_hot">0</td>       
+                </tr>
+            </thead>            
+        </table>
+
+    </div>
 </div>
 
 

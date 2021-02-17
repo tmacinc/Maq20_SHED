@@ -1,6 +1,6 @@
 {
-    "host": "192.168.0.10",
-    "port": "502",
+    "host": "169.254.128.1",
+    "port": 502,
     "channel_map_inputs": {
         "T_shed2_l": "mod1_AI_MVDN[0]",
         "T_shed2_r": "mod1_AI_MVDN[1]",

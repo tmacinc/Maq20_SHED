@@ -5,9 +5,37 @@ import json
 with open('config.json') as json_file:
     settings = json.load(json_file)
 calibration = settings["calibration"]
+vars_sys = settings["system_variables"]
+shed1_state_settings = settings["system_variables"]["SHED1"]["state"]
+shed1_alarm_limits = settings["system_variables"]["SHED1"]["alarm_limits"]      # includes the state_settings (off, in range, alarm, precondition, out of range)
+
+def pid_control(vars_eng, pid):
+    
 
 
-def SHED_control(SHED):# Action when User Input toggles SHED(n) state
+def deadhead_protection(vars_eng):
+    pass
+def status_monitor(vars_eng):
+    
+def alarm_monitor(vars_eng):
+    state_output = {"SHED1":'', "SHED2":'', "SHED3",''}
+    for key in vars_sys.keys(): #SHED1, SHED2, SHED3
+        for key2 in vars_sys[key]["alarm_limits"]["high"].keys(): #variable in ["alarm_limits"]["high"]
+            if vars_eng[key2]  > vars_sys[key]["alarm_limits"]["high"][key2] :
+                state[key] = "alarm"            
+                 #vars_sys[key]["state"] = settings["system_variables"][key]["state"]["alarm"]
+        for key2 in vars_sys[key]["alarm_limits"]["low"].keys(): #variable in ["alarm_limits"]["low"]
+            if vars_eng[key2]  < vars_sys[key]["alarm_limits"]["low"][key2]:
+                state[key] = "alarm"
+                #vars_sys[key]["state"] = settings["system_variables"][key]["state"]["alarm"]
+    return state
+
+def flow_monitor(vars_eng):
+    state = {"SHED1":'', "SHED2":'', "SHED3",''}
+    for key in vars_sys.keys(): #SHED1, SHED2, SHED3
+        for key
+
+def SHED_control(SHED):
     """
     param: SHED(n) dictionary
     return: output_dict -> to be used in daq_write() function
@@ -15,21 +43,9 @@ def SHED_control(SHED):# Action when User Input toggles SHED(n) state
     """
     output_dict = {}
 
-    if SHED_status[SHED]['state'] == 0:
-        SHED_status[SHED]['state'] = 1
-        output_dict  = SHED_status[SHED]['active_config']
-    elif SHED_status[SHED]['state'] == 1 or SHED_status[SHED]['state'] == 2:
-        SHED_status[SHED]['state'] = 0
-        output_dict = SHED_status[SHED]['inactive_config']
-    else: # SHED_status == 3 ##> Alarm function RESET ALARM and turn all function off
-        SHED_status[SHED]['state'] = 0
-        output_dict = SHED_status[SHED]['inactive_config']  
-    
+
     return output_dict
 
-def SHED_ready(SHED_status_dict, var_eng_dict): #Action to confirm if SHED is ready
-    for key in SHED_status_dict.keys():
-        if SHED_status_dict[key]["state"] == 1 or
 
 
 def shed_status_check(var_eng_dict, status_dict):

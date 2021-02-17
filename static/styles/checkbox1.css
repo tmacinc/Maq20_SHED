@@ -1,14 +1,14 @@
 .inputGroup {
     background-color: rgba(255, 0, 0, 0.226);
     display: block;
-    margin: 10px 0;
+    margin: 0;
     position: relative;
   }
   .inputGroup label {
     padding: 12px 30px;
     width: 100%;
     display: block;
-    text-align: left;
+    text-align: center;
     color: #000000;
     cursor: pointer;
     position: relative;
