@@ -56,7 +56,7 @@
         "Flowmeter_shed1_cold": "mod8_DIO_DIOL[0]",
         "Request_shed1": "mod8_DIO_DIOL[1]",
         "Flowmeter_shed1_hot": "mod8_DIO_DIOL[2]",
-        "mod8_DIO_DIOL_Placeholder9": "mod8_DIO_DIOL[3]",
+        "Alarm_shed1": "mod8_DIO_DIOL[3]",
         "mod8_DIO_DIOL_Placeholder10": "mod8_DIO_DIOL[4]"
     },
     "channel_map_outputs": {
@@ -121,8 +121,8 @@
         "Exhaust_fan": 0,
         "Door_shed2_seal": 0,
         "Door_shed3_seal":0,
-        "Exhaust_shed2": 1,
-        "Exhaust_shed3": 1,
+        "Exhaust_shed2": 0,
+        "Exhaust_shed3": 0,
         "Request_good_shed1": 0,
         "Request_good_shed2": 0,
         "Request_good_shed3": 0
@@ -132,7 +132,8 @@
     "system_variables": {
         "SHED1" : {
             "request" : "off",
-            "state" : {
+            "state" : "off",
+            "state_settings": {
                 "off":{
                     "Pump_shed1_cold" : 0,
                     "Valve_shed1_cold" : 0,
@@ -145,22 +146,20 @@
                     "Valve_shed1_cold" : 10,
                     "Request_good_shed1": 1  
                 },
-                "alarm":{
+                "alarm":{ 
+                    "high": {},
+                    "low": {}
                     
 
                 },
-                "precondition": {
+                "on": {
                     "Exhaust_fan" : 1,
                     "Pump_shed1_cold" : 1,
                     "Valve_shed1_cold" : 10,
                     "Pump_main_cold" : 1,
                     "Valve_main_cold": 0   
-                },
-                "out_of_range" : {
-                    "Exhaust_fan" : 1,
-                    "Pump_shed1_cold" : 1,
-                    "Valve_shed1_cold" : 10    
                 }
+
             },
             "flow_limits": {
                 "high": {
@@ -175,7 +174,79 @@
                 
             },
             "alarm_limits": {
+                "high": {
                 "Alarm_shed1" : 1
+                },
+                "low" : {}
+            }
+        },
+        "SHED2" : {
+            "request" : "off",
+            "state" : "off",
+            "set_temp": 42,
+            "PID": {
+                "control": "T_shed2",
+                "p": 0,
+                "i": 0,
+                "d": 0,
+                "limits":{
+                    "low": 0,
+                    "high" : 0
+                }
+            },
+            "state_settings" : {
+                "off":{
+                    "Pump_shed2_cold" : 0,
+                    "Valve_shed2_cold" : 0,
+                    "Pump_shed2_hot" : 0,
+                    "Valve_shed2_hot" : 0
+                },
+                "on" : {
+                    "Exhaust_fan" : 1,
+                    "Exhaust_shed2": 1,
+                    "Pump_shed2_cold" : 1,
+                    "Valve_shed2_cold" : 10,
+                    "Pump_shed2_hot" : 1,
+                    "Valve_shed2_hot" : 10,
+                    "Pump_main_hot" : 1,
+                    "Valve_main_hot" :  0,
+                    "Pump_main_cold" : 1,
+                    "Valve_main_cold" :  0
+                },
+                "alarm":{
+                    "Exhaust_fan": 1,
+                    "Exhaust_damper": 1,
+                    "Exhaust_shed2": 0,
+                    "Pump_shed2_hot": 0,
+                    "Valve_shed2_hot": 0,
+                    "Pump_shed2_cold": 0,
+                    "Valve_shed2_cold": 0,
+                    "Door_shed2_seal": 0
+                }
+            },
+            "flow_limits": {
+                "high": {
+                },
+                "low": {
+                    "T_shed3_hot": 40,
+                    "Flowmeter_shed3_hot" : 4.5,
+                    "T_main_hot": 42,
+                    "Flowmeter_main_hot": 4.5               
+                }
+            },
+            "alarm_limits": {
+                "high": {
+                    "Gas_analyzer_shed3": 0.9
+                },
+                "low": {}
+            },
+            "shed_temp_range":{
+                "low": {
+                    "T_shed3": 41.5
+                },
+                "high":{
+                    "T_shed3": 45
+                }
             }
         },
         "SHED3" : {
@@ -183,7 +254,7 @@
             "state" : "off",
             "set_temp": 42,
             "PID": {
-                "control": "Valve_shed3_hot",
+                "control": "T_shed3",
                 "p": 0,
                 "i": 0,
                 "d": 0,
@@ -201,7 +272,7 @@
                 },
                 "on" : {
                     "Exhaust_fan" : 1,
-                    "Exhaust_shed3": 0,
+                    "Exhaust_shed3": 1,
                     "Pump_shed3_hot" : 1,
                     "Valve_shed3_hot" : 10,
                     "Pump_main_hot" : 1,
@@ -210,24 +281,12 @@
                 "alarm":{
                     "Exhaust_fan": 1,
                     "Exhaust_damper": 1,
-                    "Exhaust_shed3": 1,
+                    "Exhaust_shed3": 0,
                     "Pump_shed3_hot": 0,
                     "Valve_shed3_hot": 0,
                     "Pump_shed3_cold": 0,
                     "Valve_shed3_cold": 0,
                     "Door_shed3_seal": 0
-                },
-                "precondition": {
-                    "Exhaust_fan" : 1,
-                    "Pump_shed3_hot" : 1,
-                    "Valve_shed3_hot" : 10,
-                    "Pump_main_hot" : 1,
-                    "Valve_main_hot" :  0  
-                },
-                "out_of_range" : {
-                    "Exhaust_fan" : 1,
-                    "Pump_shed3_hot" : 1,
-                    "Valve_shed3_hot" : 10    
                 }
             },
             "flow_limits": {
@@ -243,7 +302,8 @@
             "alarm_limits": {
                 "high": {
                     "Gas_analyzer_shed3": 0.9
-                }
+                },
+                "low": {}
             },
             "shed_temp_range":{
                 "low": {
@@ -269,137 +329,187 @@
         "Flowmeter_shed1_hot": 151.4,    
         "Flowmeter_shed1_cold": 151.4
     },
-    "status": {
-        "Control_shed1": 0,
-        "Control_shed2": 0,
-        "Control_shed3": 0
-    },
     "alarm":{
-        "Gas_analyzer_shed2": {
-            "state" : 0,
+        "Gas_analyzer_shed2":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 100,
-                "low" : 0
+            "limits": {
+                "high": 100,
+                "low": 0
             },
-            "active_config": {
+            "active_config":{
                 "Exhaust_fan": 1,
                 "Exhaust_damper": 1,
-                "Exhaust_shed2": 1,
+                "Exhaust_shed2": 0,
                 "Pump_shed2_hot": 0,
                 "Valve_shed2_hot": 0,
                 "Pump_shed2_cold": 0,
                 "Valve_shed2_cold": 0,
                 "Door_shed2_seal": 0
             }
-            
         },
-        "Gas_analyzer_shed3": {
-            "state" : 0,
+        "Gas_analyzer_shed3":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 100,
-                "low" : 0
+            "limits": {
+                "high": 100,
+                "low": 0
             },
-            "active_config": {
+            "active_config":{
                 "Exhaust_fan": 1,
                 "Exhaust_damper": 1,
-                "Exhaust_shed3": 1,
+                "Exhaust_shed3": 0,
                 "Pump_shed3_hot": 0,
                 "Valve_shed3_hot": 0,
                 "Pump_shed3_cold": 0,
                 "Valve_shed3_cold": 0,
                 "Door_shed3_seal": 0
             }
-        
         },
-        "Flowmeter_shed3_hot": {
-            "state" : 0,
+        "Flowmeter_shed1_cold":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 6,
-                "low" : 4
+            "limits": {
+                "high": 10,
+                "low": 0
             },
-            "active_config": {
-
-            }
+            "active_config":{}
         },
-        "Flowmeter_shed3_cold": {
-            "state" : 0,
+        "Flowmeter_shed1_hot":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 6,
-                "low" : 4
+            "limits": {
+                "high": 10,
+                "low": 0
             },
-            "active_config": {
-
-            }
+            "active_config":{}
         },
-        "Flowmeter_shed2_hot": {
-            "state" : 0,
+        "Flowmeter_shed2_cold":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 6,
-                "low" : 4
+            "limits": {
+                "high": 10,
+                "low": 0
             },
-            "active_config": {
-
-            }
+            "active_config":{}
         },
-        "Flowmeter_shed2_cold": {
-            "state" : 0,
+        "Flowmeter_shed2_hot":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 6,
-                "low" : 4
+            "limits": {
+                "high": 10,
+                "low": 0
             },
-            "active_config": {
-
-            }
+            "active_config":{}
         },
-        "Flowmeter_main_hot": {
-            "state" : 0,
+        "Flowmeter_shed3_cold":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 6,
-                "low" : 4
+            "limits": {
+                "high": 10,
+                "low": 0
             },
-            "active_config": {
-
-            }
+            "active_config":{}
         },
-        "Flowmeter_main_cold": {
-            "state" : 0,
+        "Flowmeter_shed3_hot":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 6,
-                "low" : 4
+            "limits": {
+                "high": 10,
+                "low": 0
             },
-            "active_config": {
-
-            }
+            "active_config":{}
         },
-        "Flowmeter_shed1_cold": {
-            "state" : 0,
+        "Flowmeter_main_cold":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 6,
-                "low" : 4
+            "limits": {
+                "high": 10,
+                "low": 0
             },
-            "active_config": {
-
-            }
+            "active_config":{}
         },
-        "Flowmeter_shed1_hot": {
-            "state" : 0,
+        "Flowmeter_main_hot":{
+            "state": 0,
             "limit_type": "inside",
-            "limits" : {
-                "high" : 6,
-                "low" : 4
+            "limits": {
+                "high": 10,
+                "low": 0
             },
-            "active_config": {
-
-            }
+            "active_config":{}
+        },
+        "T_shed1_cold":{
+            "state": 0,
+            "limit_type": "inside",
+            "limits": {
+                "high": 15,
+                "low": 0
+            },
+            "active_config":{}
+        },
+        "T_shed1_hot":{
+            "state": 0,
+            "limit_type": "inside",
+            "limits": {
+                "high": 70,
+                "low": 48
+            },
+            "active_config":{}
+        },
+        "T_shed2_cold":{
+            "state": 0,
+            "limit_type": "inside",
+            "limits": {
+                "high": 15,
+                "low": 0
+            },
+            "active_config":{}
+        },
+        "T_shed2_hot":{
+            "state": 0,
+            "limit_type": "inside",
+            "limits": {
+                "high": 70,
+                "low": 48
+            },
+            "active_config":{}
+        },
+        "T_shed3_cold":{
+            "state": 0,
+            "limit_type": "inside",
+            "limits": {
+                "high": 15,
+                "low": 0
+            },
+            "active_config":{}
+        },
+        "T_shed3_hot":{
+            "state": 0,
+            "limit_type": "inside",
+            "limits": {
+                "high": 70,
+                "low": 48
+            },
+            "active_config":{}
+        },
+        "T_main_cold":{
+            "state": 0,
+            "limit_type": "inside",
+            "limits": {
+                "high": 15,
+                "low": 0
+            },
+            "active_config":{}
+        },
+        "T_main_hot":{
+            "state": 0,
+            "limit_type": "inside",
+            "limits": {
+                "high": 70,
+                "low": 48
+            },
+            "active_config":{}
         }
+
     }
 }

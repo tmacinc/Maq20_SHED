@@ -114,3 +114,9 @@ div {
 .range_low {
   background-color: hsla(220, 100%, 50%, 1);
 }
+
+.t1 {
+  text-align: center;
+  font-size: 100;
+  font-weight: Bold;
+}

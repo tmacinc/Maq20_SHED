@@ -1,4 +1,8 @@
-import daq
+demo = False   # bool
+if demo:
+    import daq_demo as daq
+else:
+     import daq
 from alarms import alarm
 from flask import Flask, render_template, jsonify, request
 from threading import Thread, Event, Lock
@@ -7,11 +11,14 @@ from flask_socketio import SocketIO, emit
 import json
 from time import sleep
 from datetime import datetime, timedelta
+from simple_pid import PID
+
 #import eventlet                # If using sockets. Otherwise sockets will use long polling (cross platform)
 from waitress import serve      # Production server for windows applications
 #import gunicorn                # Production server for linux applications
 import auxiliary_calculations
-import shed_control
+
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
@@ -22,9 +29,12 @@ app.config['DEBUG'] = True
 with open('config.json') as json_file:
     settings = json.load(json_file)
 
+#socketio = SocketIO(app)
 daq = daq.dataforth(settings)
 
+
 #----------------- Build variables dictionary - Can also have scales, eng units etc -----------------------------------
+## convert this to class once finalized?
 
 daq_channels = []
 for key in settings["channel_map_inputs"]:
@@ -41,21 +51,21 @@ vars_sys = {}
 for channel in settings['system_variables'].keys():
     vars_sys[channel] = settings['system_variables'][channel]
 calibration = settings["calibration"]
-all_off = settings["all_off"]
+#var_sys = {"SHED1": {"status": "off"}, "SHED2": {"status": "off"}, "SHED3": {"status": "off"}} ## parse in from JSON file
+
+pid_SHED3 = PID(vars_sys["SHED3"]["PID"]["p"],vars_sys["SHED3"]["PID"]["i"], vars_sys["SHED3"]["PID"]["d"], vars_sys["SHED3"]["set_temp"])
+pid_SHED3.output_limits =  (vars_sys["SHED3"]["PID"]["limits"]["low"],vars_sys["SHED3"]["PID"]["limits"]["high"])
 
 
+def pid_control(pid, current_temp, set_temp):
+    pid.setpoint = set_temp
+    return pid(current_temp)
 
 #------------------- Initialize alarms ---------------------------------------------------------------------------------
-alarm = {}
-for key in settings["alarm"]:
-    alarm[key] = shed_control.alarm(key,settings["alarm"][key])
 
-print(alarm["Gas_analyzer_shed3"].limit_high)
-
-print(alarm)
-alarm["Gas_analyzer_shed3"].limit_high = 42
-print(alarm["Gas_analyzer_shed3"].limit_high)
-
+alarms = []
+for key in settings['alarm']:
+    alarms.append(alarm(key, settings['alarm'][key])) 
 
 #------------------- Route Functions - Perform task when browser directs to link (serves html etc) ---------------------
 
@@ -73,13 +83,9 @@ def maq20_overview():
 def permeation():
     return render_template('permeation.html')
 
-@app.route('/health')
+@app.route('/all_health.html')
 def all_health():
-    return render_template('all_health.html')
-    
-@app.route('/all_control')
-def all_control():
-    return render_template('all_control.html')
+    return render_template("all_health.html")
 
 #------------------- Data routes used by JQuery ------------------------------------------------------------------------
 
@@ -99,13 +105,7 @@ def set_variable_value():
     variable = list(request.args.to_dict().keys())
     variable_name = variable[0]
     print("Received request to update setting: " + variable_name + " to new value: " + variable_to_set[variable_name])
-    if "SHED" in variable_name:
-        queue.put({"update_shed_request": variable_to_set})
-    if "high_" in variable_name or "low_" in variable_name:
-        queue.put({"limit_set_request": variable_to_set})
-    else:
-        queue.put({"write_channels": variable_to_set})
-
+    queue.put({"write_channels": variable_to_set})
     return jsonify(ajax_response="Received variable -> value: " + str(variable_name) + " -> " + str(variable_to_set[variable_name]))
 
 @app.route('/_maq20_fetch_data')                            #Used for maq20_overview.html - not super useful outside of an overview
@@ -127,6 +127,40 @@ def update_variables(data):                                 # updates the variab
     temp = auxiliary_calculations.raw_to_eng(vars_raw, calibration)
     for key in temp.keys():
         vars_eng[key] = temp[key]
+
+def update_calculated_variables():
+    vars_eng["T_shed2"] = round((vars_eng["T_shed2_l"] + vars_eng["T_shed2_r"] / 2), 2)
+    vars_eng["T_shed3"] = round((vars_eng["T_shed3_l"] + vars_eng["T_shed3_r"] / 2), 2)
+
+def update_remote_request():    
+    if vars_raw["Request_shed1"] == 0:
+        vars_sys["SHED1"]["request"] = "on"
+        print("SHED1 request on")
+    if vars_raw["Request_shed2"] == 1:
+    #     vars_sys["SHED2"]["request"] = "on"
+        pass
+    if vars_raw["Request_shed3"] == 1:
+        vars_sys["SHED3"]["request"] = "on"
+ 
+def SHED_control(SHED):# Action when User Input toggles SHED(n) state
+    """
+    param: SHED(n) dictionary
+    return: output_dict -> to be used in daq_write() function
+    """
+    output_dict = {}
+    
+    if vars_sys[SHED]['state'] == 0:
+        vars_sys[SHED]['state'] = 1
+        output_dict  = vars_sys[SHED]['active_config']
+    elif vars_sys[SHED]['state'] == 1 or vars_sys[SHED]['state'] == 2:
+        vars_sys[SHED]['state'] = 0
+        output_dict = vars_sys[SHED]['inactive_config']
+    else: # SHED_status == 3 ##> Alarm function RESET ALARM and turn all function off
+        vars_sys[SHED]['state'] = 0
+        output_dict = vars_sys[SHED]['inactive_config']  
+    
+    return output_dict
+
 #--------------------- Background Task - This Parallel function to the Flask functions. Used for managing daq, calling threads with control functions etc. Will run without client connected.
 
 def background_tasks(queue=Queue): 
@@ -138,93 +172,49 @@ def background_tasks(queue=Queue):
             if not queue.empty(): # process queue
                 task = queue.get()
                 for key in task.keys():
+                    # add if key == "system"
                     if key == "write_channels":
-                        daq.write_channels(task[key])
-                        #vars_raw = task[key]
-                    elif key == "update_shed_request":
-                        update_shed_request(task[key])
-                    elif key == "limit_set_request":
-                        update_alarm_limit(task[key])
+                        if key in daq_channels:
+                            daq.write_channels(task[key])
+                        elif "SHED" in key:
+                            update_system_variable(task[key])
+                            
             t_now = datetime.now()
             sleep(0.01)
         t_next = t_next + timedelta(seconds=1)              # runs every 1 second (Slower tasks, reading daq etc)
         t_now = datetime.now()
         read_daq()
         update_calculated_variables()
-        alarm_monitor()
+        update_remote_request()
+        #check alarms
+        #control algorithm -> call daq.write_channels()
 
-#---------------------- Update SHED operation functions ----------------------------------------------------------------
 
-def update_shed_request(request): # update shed request from webpage
-    for key in request.keys():
-        if request[key] == "true":
+def update_system_variable(task):
+    for key in task.key():
+        if vars_sys[key]["request"] == "off" and vars_sys[key]["state"] != "alarm": 
             vars_sys[key]["request"] = "on"
-        elif request[key] == "false":
+            vars_sys[key]["state"] = "on"
+            daq.write_channels(vars_sys[key]["state_settings"]["on"])
+            #print(vars_sys)
+        else:
             vars_sys[key]["request"] = "off"
-        if vars_sys[key]["state"] != "alarm":
-            vars_sys[key]["state"] = vars_sys[key]["request"]
-            daq.write_channels(vars_sys[key]["state_settings"][vars_sys[key]["state"]])
-        else: 
-            pass
-    if vars_sys["SHED1"]["state"] == vars_sys["SHED2"]["state"] == vars_sys["SHED3"]["state"] == "off":
-        daq.write_channels(all_off)
+            daq.write_channels(vars_sys[key]["state_settings"]["off"])
+            if vars_sys["SHED1"]["request"] == vars_sys["SHED2"]["request"] == vars_sys["SHED3"]["request"]:
+                daq.write_channels(vars_sys["all_off"])
+            #print(vars_sys)
 
-def update_alarm_limit(request):
-    for key in request.keys():
-        if key.startswith("low_"):
-            key2 = key[4:]
-            alarm[key2].change_limit("low",request[key])
-            print("change alarm success!")
-        if key.startswith("high_"):
-            key2 = key[5:]
-            alarm[key2].change_limit("high",request[key])
-            print("change alarm success!")
-# def update_shed_request_daq():      # update SHED request from daq input
-#     for key in vars_raw.keys():
-#         if key == "Request_shed1":
-#             if vars_raw[key] == 1:
-#                 vars_sys["SHED1"]["request"] = "on"
-#             elif vars_raw[key] == 0:
-#                 vars_sys["SHED1"]["request"] = "off"
-#         if key == "Request_shed2":
-#             if vars_raw[key] == 1:
-#                 vars_sys["SHED2"]["request"] = "on"
-#             elif vars_raw[key] == 0:
-#                 vars_sys["SHED2"]["request"] = "off"
-#         if key == "Request_shed3":
-#             if vars_raw[key] == 1:
-#                 vars_sys["SHED3"]["request"] = "on"
-#             elif vars_raw[key] == 0:
-#                 vars_sys["SHED3"]["request"] = "off"
-
-
-def alarm_monitor():
-    for key in alarm:
-        alarm[key].update_state(vars_eng[key])
-    # alarm_output = {}
-    # for key in vars_sys.keys():
-    #     for key2 in vars_sys[key]["alarm_limits"]["high"].keys():
-    #         if vars_eng[key2] > vars_sys[key]["alarm_limits"]["high"][key2]:
-    #             vars_sys[key]["state"] = "alarm"
-    #             alarm_output = vars_sys[key]["state_settings"]["alarm"]
-    #     for key3 in vars_sys[key]["alarm_limits"]["low"].keys():
-    #         if vars_eng[key3] < vars_sys[key]["alarm_limits"]["low"][key3]:
-    #             vars_sys[key]["state"] = "alarm"
-    #             alarm_output = vars_sys[key]["state_settings"]["alarm"]
-    # daq.write_channels(alarm_output)
-
-
-def update_calculated_variables():
-    vars_eng["T_shed2"] = str(round((vars_eng["T_shed2_l"] + vars_eng["T_shed2_r"] / 2), 2)) 
-    vars_eng["T_shed3"] = str(round((vars_eng["T_shed3_l"] + vars_eng["T_shed3_r"] / 2), 2))
-
-def deadhead_protection():
-    pass
-    # get position of valve and if position is less than a value in config, pump shuts off
-
+# def system_operation():
+#     write_to_daq_dict = {}
+#     for key in vars_sys.keys():
+#         if vars_sys[key][request] == "off":
+#             write_to_daq_dict = vars_sys[key]["state_settings"]["off"]
+#         else:
+#             pass
+    
 
 #--------------------- Initialize background thread --------------------------------------------------------------------
-daq.write_channels(all_off)
+
 queue = Queue()
 background = Thread(target=background_tasks, args=(queue,))
 background.daemon = True

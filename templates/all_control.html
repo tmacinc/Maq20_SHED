@@ -1,0 +1,641 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="/static/styles/all_health.css">
+<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-linear-gauge.min.js"></script>
+<script src="static/js/base.js"></script>
+
+
+<h2> Permeation SHED Monitoring and Control</h2>
+<p>This page includes the monitoring of all 3 SHEDs as well as control for SHED3</p>
+<div class="main_flow">
+    <div class="row">
+        <div class="column">
+            <table width="100%" >
+
+
+                <th colspan="3">
+                    Alarm Monitoring
+                </th>
+                <tr>
+                    <th width="33%">SHED1</th>
+                    <th width="33%">SHED2</th>
+                    <th width="33%">SHED3</th>
+                </tr>
+                <tr>
+                    <td id="input_Alarm_shed1">
+                        SHED1 Alarm input
+                    </td>
+                    <td id="input_Gas_analyzer_shed2">THC alarm2</td>
+                    <td id="input_Gas_analyzer_shed3">THC alarm3</td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td>
+                        <label for="input_low_Gas_analyzer_shed2">Low Limit:</label>
+                        <input type="number" id="input_low_Gas_analyzer_shed2" min="0" max="100">
+                    </td>
+                    <td>
+                        <label for="input_low_Gas_analyzer_shed3">Low Limit:</label>
+                        <input type="number" id="input_low_Gas_analyzer_shed3" min="0" max="100">
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <label for="input_high_Gas_analyzer_shed2">High Limit:</label>
+                        <input type="number" id="input_high_Gas_analyzer_shed2" min="0" max="100">
+                    </td>
+                    <td>
+                        <label for="input_high_Gas_analyzer_shed3">High Limit:</label>
+                        <input type="number" id="input_high_Gas_analyzer_shed3" min="0" max="100">
+                    </td>
+                </tr>
+
+
+
+
+
+
+            </table><br>
+
+            <table width="100%" >
+
+
+                <th colspan="5">Flow Warning</th>
+                    <tr>
+                        <th width="12%"></th>
+                        <th width="22%">Main</th>
+                        <th width="22%">SHED1</th>
+                        <th width="22%">SHED2</th>
+                        <th width="22%">SHED3</th>
+                    </tr>
+                    <tr>
+                        <th class="cold_head2" font-size="20px">Cold</th>
+                        <td id="input_Flowmter_main_cold">                    
+                        </td>
+                        <td id="input_Flowmeter_shed1_cold"></td>
+                        <td id="input_Flowmeter_shed2_cold"></td>
+                        <td id="input_Flowmeter_shed3_cold"></td>
+                    </tr>
+                    <tr>
+                        <th class="hot_head2">Hot</th>
+                        <td id="input_Flowmter_main_hot">                    
+                        </td>
+                        <td id="input_Flowmeter_shed1_hot"></td>
+                        <td id="input_Flowmeter_shed2_hot"></td>
+                        <td id="input_Flowmeter_shed3_hot"></td>
+                    </tr>
+              
+
+
+            </table>
+
+
+
+        </div>
+        <div class="column2">
+            <table>
+
+                <tr>
+                    <th colspan="8">
+                        <h1>Main Flow</h1>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="cold_head" colspan="4">Cold</th>
+                    <th class="hot_head" colspan="4">Hot</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                    <th>Pump</th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id="Pump_main_cold">0</td>
+                    <td id="Flowmeter_main_cold">0</td>
+                    <td id="T_main_cold">0</td>
+                    <td id="Valve_main_cold">0</td>
+                    <td id="Pump_main_hot">0</td>
+                    <td id="Flowmeter_main_hot">0</td>
+                    <td id="T_main_hot">0</td>
+                    <td id="Valve_main_hot">0</td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="inputgroup">
+                            <input id="input_Pump_main_cold" name="input_Pump_main_cold" type="checkbox" />
+                            <label for="input_Pump_main_cold">Pump i/o</label>
+                        </div>
+                    </td>
+                    <td>
+                        blank
+                    </td>
+                    <td>
+                        blank
+                    </td>
+                    <td>
+        </div>
+        <input type="range" min="0" max="10" value="0" step="0.1" id="input_Valve_main_cold"
+            name="input_Valve_main_cold">
+        <div>
+
+            </td>
+            <td>
+                <div class="inputgroup">
+                    <input id="input_Pump_main_hot" name="input_Pump_main_hot" type="checkbox" />
+                    <label for="input_Pump_main_hot">Pump i/o</label>
+                </div>
+            </td>
+            <td>
+                blank
+            </td>
+            <td>
+                blank
+            </td>
+            <td>
+        </div>
+        <input type="range" min="0" max="10" value="0" step="0.1" id="input_Valve_main_hot" name="input_Valve_main_hot">
+        <div>
+
+            </td>
+            </tr>
+            <tr>
+                <th colspan="2">Flow Rate Warning Limits</th>
+                <th colspan="2">Flow Temp. Warning Limits</th>
+                <th colspan="2">Flow Rate Warning Limits</th>
+                <th colspan="2">Flow Temp. Warning Limits</th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="input_low_Flowmeter_main_cold">Low:</label>
+                    <input type="number" id="input_low_Flowmeter_main_cold" value="" min="0" max="10">
+                </td>
+                <td>
+                    <label for="input_high_Flowmeter_main_cold">High:</label>
+                    <input type="number" id="input_high_Flowmeter_main_cold" min="0" max="10">
+                </td>
+
+                <td>
+                    <label for="input_low_T_main_cold">Low:</label>
+                    <input type="number" id="input_low_T_main_cold" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_high_T_main_cold">High:</label>
+                    <input type="number" id="input_high_T_main_cold" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_low_Flowmeter_main_hot">Low:</label>
+                    <input type="number" id="input_low_Flowmeter_main_hot" min="0" max="10">
+                </td>
+                <td>
+                    <label for="input_high_Flowmeter_main_hot">High:</label>
+                    <input type="number" id="input_high_Flowmeter_main_hot" min="0" max="10">
+                </td>
+
+                <td>
+                    <label for="input_low_T_main_hot">Low:</label>
+                    <input type="number" id="input_low_T_main_hot" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_high_T_main_hot">High:</label>
+                    <input type="number" id="input_high_T_main_hot" min="0" max="100">
+                </td>
+            </tr>
+
+            </table>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="column">
+            <!--  SHED 1 Control and Monitoring-->
+            <div class="inputgroup">
+                <input id="input_SHED1" name="input_SHED1" type="checkbox" />
+                <label for="input_SHED1">SHED1 on/off</label>
+            </div>
+            <br>
+
+            <table>
+
+                <tr>
+                    <th colspan="4">
+                        <h3>SHED1 Flow Monitoring</h3>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="cold_head" colspan="4">Cold</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id="Pump_shed1_cold">0</td>
+                    <td id="Flowmeter_shed1_cold">0</td>
+                    <td id="T_shed1_cold">0</td>
+                    <td id="Valve_shed1_cold">0</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="inputgroup">
+                            <input id="input_Pump_shed1_cold" name="input_Pump_shed1_cold" type="checkbox" />
+                            <label for="input_Pump_shed1_cold">Pump i/o</label>
+                        </div>
+                    </td>
+                    <td>
+                        blank
+                    </td>
+                    <td>
+                        blank
+                    </td>
+                    <td>
+        </div>
+        <input type="range" min="0" max="10" value="0" step="0.1" id="input_Valve_shed1_cold"
+            name="input_Valve_shed3_cold">
+        <div>
+
+            </td>
+            </tr>
+            <tr>
+                <th colspan="2">Flow Rate Warning Limits</th>
+                <th colspan="2">Flow Temp. Warning Limits</th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="input_low_Flowmeter_shed1_cold">Low:</label>
+                    <input type="number" id="input_low_Flowmeter_shed1_cold" value="" min="0" max="10">
+                </td>
+                <td>
+                    <label for="input_high_Flowmeter_shed1_cold">High:</label>
+                    <input type="number" id="input_high_Flowmeter_shed1_cold" value="" min="0" max="10">
+                </td>
+
+                <td width=5px>
+                    <label for="input_low_T_shed1_cold">Low:</label>
+                    <input type="number" id="input_low_T_shed1_cold" value="" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_high_T_shed1_cold">High:</label>
+                    <input type="number" id="input_high_T_shed1_cold" min="0" max="100">
+                </td>
+            </tr>
+
+            <tr>
+                <th class="hot_head" colspan="4">Hot</th>
+            </tr>
+            <tr>
+                <th>Pump </th>
+                <th>Flow Rate</th>
+                <th>Flow Temp.</th>
+                <th>Valve Position</th>
+            </tr>
+            <tr>
+                <td id="Pump_shed1_hot">0</td>
+                <td id="Flowmeter_shed1_hot">0</td>
+                <td id="T_shed1_hot">0</td>
+                <td id="Valve_shed1_hot">0</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="inputgroup">
+                        <input id="input_Pump_shed1_hot" name="input_Pump_shed1_hot" type="checkbox" />
+                        <label for="input_Pump_shed1_hot">Pump i/o</label>
+                    </div>
+                </td>
+                <td>
+                    blank
+                </td>
+                <td>
+                    blank
+                </td>
+                <td>
+        </div>
+        <input type="range" min="0" max="10" value="0" step="0.1" id="input_Valve_shed1_hot"
+            name="input_Valve_shed1_hot">
+        <div>
+
+            </td>
+            </tr>
+            <tr>
+                <th colspan="2">Flow Rate Warning Limits</th>
+                <th colspan="2">Flow Temp. Warning Limits</th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="input_low_Flowmeter_shed1_hot">Low:</label>
+                    <input type="number" id="input_low_Flowmeter_shed1_hot" value="" min="0" max="10">
+                </td>
+                <td>
+                    <label for="input_high_Flowmeter_shed1_hot">High:</label>
+                    <input type="number" id="input_high_Flowmeter_shed1_hot" min="0" max="10">
+                </td>
+
+                <td width=5px>
+                    <label for="input_low_T_shed1_hot">Low:</label>
+                    <input type="number" id="input_low_T_shed1_hot" value="" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_high_T_shed1_hot">High:</label>
+                    <input type="number" id="input_high_T_shed1_hot" min="0" max="100">
+                </td>
+            </tr>
+
+            </table>
+
+        </div>
+        <div class="column">
+            <!--  SHED 2 Control and Monitoring-->
+            <div class="inputgroup">
+                <input id="input_SHED2" name="input_SHED2" type="checkbox" />
+                <label for="input_SHED2">SHED2 on/off</label>
+            </div>
+            <div class="t1" id="T_shed2">0</div>
+            <table>
+
+                <tr>
+                    <th colspan="4">
+                        <h3>SHED2 Flow Monitoring</h3>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="cold_head" colspan="4">Cold</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id="Pump_shed2_cold">0</td>
+                    <td id="Flowmeter_shed2_cold">0</td>
+                    <td id="T_shed2_cold">0</td>
+                    <td id="Valve_shed2_cold">0</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="inputgroup">
+                            <input id="input_Pump_shed2_cold" name="input_Pump_shed2_cold" type="checkbox" />
+                            <label for="input_Pump_shed2_cold">Pump i/o</label>
+                        </div>
+                    </td>
+                    <td>
+                        blank
+                    </td>
+                    <td>
+                        blank
+                    </td>
+                    <td>
+        </div>
+        <input type="range" min="0" max="10" value="0" step="0.1" id="input_Valve_shed2_cold"
+            name="input_Valve_shed2_cold">
+        <div>
+
+            </td>
+            </tr>
+            <tr>
+                <th colspan="2">Flow Rate Warning Limits</th>
+                <th colspan="2">Flow Temp. Warning Limits</th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="input_low_Flowmeter_shed2_cold">Low:</label>
+                    <input type="number" id="input_low_Flowmeter_shed2_cold" value="" min="0" max="10">
+                </td>
+                <td>
+                    <label for="input_high_Flowmeter_shed2_cold">High:</label>
+                    <input type="number" id="input_high_Flowmeter_shed2_cold" min="0" max="10">
+                </td>
+
+                <td width=5px>
+                    <label for="input_low_T_shed2_cold">Low:</label>
+                    <input type="number" id="input_low_T_shed2_cold" value="" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_high_T_shed2_cold">High:</label>
+                    <input type="number" id="input_high_T_shed2_cold" min="0" max="100">
+                </td>
+            </tr>
+
+
+            <tr>
+                <th class="hot_head" colspan="4">Hot</th>
+            </tr>
+            <tr>
+                <th>Pump </th>
+                <th>Flow Rate</th>
+                <th>Flow Temp.</th>
+                <th>Valve Position</th>
+            </tr>
+            <tr>
+                <td id="Pump_shed2_hot">0</td>
+                <td id="Flowmeter_shed2_hot">0</td>
+                <td id="T_shed2_hot">0</td>
+                <td id="Valve_shed2_hot">0</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="inputgroup">
+                        <input id="input_Pump_shed2_hot" name="input_Pump_shed2_hot" type="checkbox" />
+                        <label for="input_Pump_shed2_hot">Pump i/o</label>
+                    </div>
+                </td>
+                <td>
+                    blank
+                </td>
+                <td>
+                    blank
+                </td>
+                <td>
+        </div>
+        <input type="range" min="0" max="10" value="0" step="0.1" id="input_Valve_shed2_hot"
+            name="input_Valve_shed2_hot">
+        <div>
+
+            </td>
+            </tr>
+            <tr>
+                <th colspan="2">Flow Rate Warning Limits</th>
+                <th colspan="2">Flow Temp. Warning Limits</th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="input_low_Flowmeter_shed2_hot">Low:</label>
+                    <input type="number" id="input_low_Flowmeter_shed2_hot" min="0" max="10">
+                </td>
+                <td>
+                    <label for="input_high_Flowmeter_shed2_hot">High:</label>
+                    <input type="number" id="input_high_Flowmeter_shed2_hot" min="0" max="10">
+                </td>
+
+                <td>
+                    <label for="input_low_T_shed2_hot">Low:</label>
+                    <input type="number" id="input_low_T_shed2_hot" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_high_T_shed2_hot">High:</label>
+                    <input type="number" id="input_high_T_shed2_hot" min="0" max="100">
+                </td>
+            </tr>
+
+            </table>
+
+        </div>
+        <div class="column">
+            <!--  SHED 3 Control and Monitoring-->
+            <div class="inputgroup">
+                <input id="input_SHED3" name="input_SHED3" type="checkbox" />
+                <label for="input_SHED3">SHED3 on/off</label>
+            </div>
+            <div class="t1" id="T_shed3">0</div>
+            <table>
+
+                <tr>
+                    <th colspan="4">
+                        <h3>SHED3 Flow Monitoring</h3>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="cold_head" colspan="4">Cold</th>
+                </tr>
+                <tr>
+                    <th>Pump </th>
+                    <th>Flow Rate</th>
+                    <th>Flow Temp.</th>
+                    <th>Valve Position</th>
+                </tr>
+                <tr>
+                    <td id="Pump_shed3_cold">0</td>
+                    <td id="Flowmeter_shed3_cold">0</td>
+                    <td id="T_shed3_cold">0</td>
+                    <td id="Valve_shed3_cold">0</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="inputgroup">
+                            <input id="input_Pump_shed3_cold" name="input_Pump_shed3_cold" type="checkbox" />
+                            <label for="input_Pump_shed3_cold">Pump i/o</label>
+                        </div>
+                    </td>
+                    <td>
+                        blank
+                    </td>
+                    <td>
+                        blank
+                    </td>
+                    <td>
+        </div>
+        <input type="range" min="0" max="10" value="0" step="0.1" id="input_Valve_shed3_cold"
+            name="input_Valve_shed3_cold">
+        <div>
+
+            </td>
+            </tr>
+            <tr>
+                <th colspan="2">Flow Rate Warning Limits</th>
+                <th colspan="2">Flow Temp. Warning Limits</th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="input_low_Flowmeter_shed3_cold">Low:</label>
+                    <input type="number" id="input_low_Flowmeter_shed3_cold" min="0" max="10">
+                </td>
+                <td>
+                    <label for="input_high_Flowmeter_shed3_cold">High:</label>
+                    <input type="number" id="input_high_Flowmeter_shed3_cold" min="0" max="10">
+                </td>
+
+                <td>
+                    <label for="input_low_T_shed3_cold">Low:</label>
+                    <input type="number" id="input_low_T_shed3_cold" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_high_T_shed3_cold">High:</label>
+                    <input type="number" id="input_high_T_shed3_cold" min="0" max="100">
+                </td>
+            </tr>
+
+
+            <tr>
+                <th class="hot_head" colspan="4">Hot</th>
+            </tr>
+            <tr>
+                <th>Pump </th>
+                <th>Flow Rate</th>
+                <th>Flow Temp.</th>
+                <th>Valve Position</th>
+            </tr>
+            <tr>
+                <td id="Pump_shed3_hot">0</td>
+                <td id="Flowmeter_shed3_hot">0</td>
+                <td id="T_shed3_hot">0</td>
+                <td id="Valve_shed3_hot">0</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="inputgroup">
+                        <input id="input_Pump_shed3_hot" name="input_Pump_shed3_hot" type="checkbox" />
+                        <label for="input_Pump_shed3_hot">Pump i/o</label>
+                    </div>
+                </td>
+                <td>
+                    blank
+                </td>
+                <td>
+                    blank
+                </td>
+                <td>
+        </div>
+        <input type="range" min="0" max="10" step="0.1" id="input_Valve_shed3_hot" name="input_Valve_shed3_hot">
+        <div>
+
+            </td>
+            </tr>
+            <tr>
+                <th colspan="2">Flow Rate Warning Limits</th>
+                <th colspan="2">Flow Temp. Warning Limits</th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="input_low_Flowmeter_shed3_hot">Low:</label>
+                    <input type="number" id="input_low_Flowmeter_shed3_hot" min="0" max="10">
+                </td>
+                <td>
+                    <label for="input_high_Flowmeter_shed3_hot">High:</label>
+                    <input type="number" id="input_high_Flowmeter_shed3_hot" min="0" max="10">
+                </td>
+
+                <td>
+                    <label for="input_low_T_shed3_hot">Low:</label>
+                    <input type="number" id="input_low_T_shed3_hot" min="0" max="100">
+                </td>
+                <td>
+                    <label for="input_high_T_shed3_hot">High:</label>
+                    <input type="number" id="input_high_T_shed3_hot" min="0" max="100">
+                </td>
+            </tr>
+
+            </table>
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    {% endblock %}

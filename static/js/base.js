@@ -37,7 +37,7 @@ function set_variable_value(variable_to_set){
 
 // Change the background color based on the temperature value, could use range parameter for each value. eg, get info from config file on server for each variable, alarm enabled, alarm status, range high, range low.
 function changeBackgroundColor(input, value){
-    $(input).removeClass();
+    $( ).removeClass();
     if (value < 15){
         $(input).addClass('range_low bold');
     }
