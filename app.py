@@ -12,9 +12,14 @@ from waitress import serve      # Production server for windows applications
 #import gunicorn                # Production server for linux applications
 import auxiliary_calculations
 import shed_control
+from flask_sqlalchemy import SQLAlchemy
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
+app.config['AQLALCHEMY_DATABASE_URI'] = 'sqlite:///myDB.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #to supress warning
+db = SQLAlchemy(app)
 #socketio = SocketIO(app)       # If using sockets. Binds SocketIO to app
 
 #----------------- Load settings from config file, initiate daq -------------------------------------------------------
