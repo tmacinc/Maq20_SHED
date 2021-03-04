@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="static/js/base.js"></script>
+<div class="permeation_grid">
+<div class="permeation_overview">
+    <h3>Main Flow</h3>
+    <div class="permeation_overview_hot inline">
+        <div class="inline">    
+            <div>Hot loop</div>
+            <div id="Pump_main_hot">0</div>
+            <div>Flowrate</div>
+            <div id="Flowmeter_main_hot">0</div>
+            <div>Temperature</div>
+            <div id="T_main_hot">0</div>
+            <div>Valve Position</div>
+            <div id="Valve_main_hot">0</div>
+        </div>
+        <div class="inline">    
+            <div>Cold Loop</div>
+            <div id="Pump_main_cold">0</div>
+            <div>Flowrate</div>
+            <div id="Flowmeter_main_cold">0</div>
+            <div>Temperature</div>
+            <div id="T_main_cold">0</div>
+            <div>Valve Position</div>
+            <div id="Valve_main_cold">0</div>
+        </div>
+    </div>
+</div>
+<div class="permeation_controls">
+    <div class="inputgroup">
+        <input id="input_Pump_main_cold" name="Pump_main_cold" type="checkbox"/>
+        <label for="input_Pump_main_cold">Pump Main Cold</label>
+        <!--<div>
+        Pump Main Cold Speed
+    </div>
+    <input type="checkbox" id="input_Pump_main_cold">
+-->
+    </div>
+    <div class="inputgroup">
+        <input id="input_Pump_main_hot" name="Pump_main_hot" type="checkbox"/>
+        <label for="input_Pump_main_hot">Pump Main Hot</label>
+    </div>
+<!--    <div>
+        Pump Main Hot
+    </div>
+    <input type="checkbox" id="input_Pump_main_hot">
+--><div>
+        Mod 8 Channel 0 Frequency output
+    </div>
+    <input type="range" min="0" max="50" value="0" id="input_Exhaust_damper" name="input_Exhaust_damper">
+    <div>
+        Mod 5 Channel 0 Frequency Input
+    </div>
+    <div id="Flowmeter_shed3_hot">0</div>
+    <div>
+        T Shed 2 Cold
+    </div>
+    <div id="T_shed2_cold">0</div>
+    <div>
+        Valve Shed 3 Hot
+    </div>
+    <input type="range" min="-2" max="2" value="0" step="0.1" id="input_Valve_shed3_hot" name="input_Valve_shed3_hot">
+    <div>
+        MVDN Placeholder 7
+    </div>
+    <div id="MVDN_Placeholder_7">0</div>
+</div>
+</div>
+
+{% endblock %}

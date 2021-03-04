@@ -94,7 +94,6 @@ def maq20_fetch_data():
 def read_daq():                                             # get current channel values from list in vars_raw
     channels = daq_channels
     data = daq.read_channels(channels)
-    print(data)
     update_variables(data)
 
 def update_variables(data):                                 # updates the variables dictionary with new values
