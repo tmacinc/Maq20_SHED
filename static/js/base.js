@@ -52,6 +52,7 @@ function changeBackgroundColor(input, value){
 // get page variables and separate into indicators and controls (inputs and outputs).
     function get_variables(){
         var allVariables = document.querySelectorAll('[id]');               // get all id names from html
+        var allValues = document.querySelectorAll('[value]')
         var inputs = [];
         var outputs = [];
         for (var index = 0; index < allVariables.length; index++){          // iterate through list, separating inputs and removing the input_tag from the names
@@ -132,3 +133,15 @@ $(document).ready(function(){
     })
 
 })
+
+// button function for turning on 
+function ButtonFunction(variable){
+    var variable
+
+}
+
+// checkbox update on refresh
+function UpdateInputValues() {
+    var allVariables = document.querySelectorAll('[value]');
+    
+}

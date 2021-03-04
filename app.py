@@ -17,9 +17,9 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
-app.config['AQLALCHEMY_DATABASE_URI'] = 'sqlite:///myDB.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #to supress warning
-db = SQLAlchemy(app)
+# app.config['AQLALCHEMY_DATABASE_URI'] = 'sqlite:///myDB.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #to supress warning
+# db = SQLAlchemy(app)
 #socketio = SocketIO(app)       # If using sockets. Binds SocketIO to app
 
 #----------------- Load settings from config file, initiate daq -------------------------------------------------------
@@ -84,7 +84,9 @@ def all_health():
     
 @app.route('/all_control')
 def all_control():
-    return render_template('all_control.html')
+    print("Page reload")
+    print(alarm["Gas_analyzer_shed2"].limit_low)
+    return render_template('all_control.html', vars_eng = vars_raw, limits = alarm)
 
 #------------------- Data routes used by JQuery ------------------------------------------------------------------------
 
@@ -184,39 +186,13 @@ def update_alarm_limit(request):
             key2 = key[5:]
             alarm[key2].change_limit("high",request[key])
             print("change alarm success!")
-# def update_shed_request_daq():      # update SHED request from daq input
-#     for key in vars_raw.keys():
-#         if key == "Request_shed1":
-#             if vars_raw[key] == 1:
-#                 vars_sys["SHED1"]["request"] = "on"
-#             elif vars_raw[key] == 0:
-#                 vars_sys["SHED1"]["request"] = "off"
-#         if key == "Request_shed2":
-#             if vars_raw[key] == 1:
-#                 vars_sys["SHED2"]["request"] = "on"
-#             elif vars_raw[key] == 0:
-#                 vars_sys["SHED2"]["request"] = "off"
-#         if key == "Request_shed3":
-#             if vars_raw[key] == 1:
-#                 vars_sys["SHED3"]["request"] = "on"
-#             elif vars_raw[key] == 0:
-#                 vars_sys["SHED3"]["request"] = "off"
+
 
 
 def alarm_monitor():
     for key in alarm:
         alarm[key].update_state(vars_eng[key])
-    # alarm_output = {}
-    # for key in vars_sys.keys():
-    #     for key2 in vars_sys[key]["alarm_limits"]["high"].keys():
-    #         if vars_eng[key2] > vars_sys[key]["alarm_limits"]["high"][key2]:
-    #             vars_sys[key]["state"] = "alarm"
-    #             alarm_output = vars_sys[key]["state_settings"]["alarm"]
-    #     for key3 in vars_sys[key]["alarm_limits"]["low"].keys():
-    #         if vars_eng[key3] < vars_sys[key]["alarm_limits"]["low"][key3]:
-    #             vars_sys[key]["state"] = "alarm"
-    #             alarm_output = vars_sys[key]["state_settings"]["alarm"]
-    # daq.write_channels(alarm_output)
+
 
 
 def update_calculated_variables():

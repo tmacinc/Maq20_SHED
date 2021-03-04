@@ -40,6 +40,7 @@ class alarm():
         """
         if limit == "low" and lim_set.isnumeric():
             self.limit_low = lim_set
+            print("Change alarm great success!")
         if limit == "high" and lim_set.isnumeric():
             self.limit_high = lim_set
 
