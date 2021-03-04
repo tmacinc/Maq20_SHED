@@ -1,4 +1,8 @@
-import daq
+demo = True
+if demo:
+    import daq_demo as daq
+else:
+    import daq
 from alarms import alarm
 from flask import Flask, render_template, jsonify, request
 from threading import Thread, Event, Lock

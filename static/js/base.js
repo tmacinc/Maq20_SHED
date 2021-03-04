@@ -35,6 +35,12 @@ function set_variable_value(variable_to_set){
     })
 }
 
+// Runs on button clicks. Checks current state, toggles and calls set_variable_value to update
+function buttonClicked(variable_id){
+   var variable_value = $('#' + variable_id).val();
+    console.log('#' + variable_id)
+}
+
 // Change the background color based on the temperature value, could use range parameter for each value. eg, get info from config file on server for each variable, alarm enabled, alarm status, range high, range low.
 function changeBackgroundColor(input, value){
     $(input).removeClass();
