@@ -39,7 +39,7 @@ for channel in daq_channels:
     vars_raw[channel] = channel
 vars_eng = {}
 for channel in vars_raw.keys():
-    vars_eng[channel] = vars_raw[channel]
+    vars_eng[channel] = 0 #vars_raw[channel]
 vars_sys = {}
 for channel in settings['system_variables'].keys():
     vars_sys[channel] = settings['system_variables'][channel]

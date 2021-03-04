@@ -1,5 +1,4 @@
 
-
 //Get current values from server and update display. Activated at interval as set in document.ready function
 function update_page_variables(variables_to_update){
     var variables_to_update_dict = {};
@@ -15,6 +14,7 @@ function update_page_variables(variables_to_update){
             console.log(updated_variables);
             for (var i in updated_variables) {
                 updated_variable = updated_variables[i];
+                // add step to check for certain keywords and convert 0/1 to on/off (ie pump, fan, etc)
                 $('#' + i).html(updated_variable);               // update value at current id
                 $('#' + i).addClass('bold');                    // bold numbers when they are updated
                 //changeBackgroundColor("#" + i, number_received);// change background color based on value for alarming reasons
@@ -37,8 +37,18 @@ function set_variable_value(variable_to_set){
 
 // Runs on button clicks. Checks current state, toggles and calls set_variable_value to update
 function buttonClicked(variable_id){
-   var variable_value = $('#' + variable_id).val();
-    console.log('#' + variable_id)
+    var variable_value_current = $('#' + variable_id).text(); // text is used for getting the html string between the tag brackets. Val works on input boxes.
+    var variable_value_new = 0
+    console.log(variable_value_current)
+    if (variable_value_current == 0) { 
+        variable_value_new = 1
+    }else{
+        variable_value_new = 0
+    }
+    var variable = {}
+    variable[variable_id] = variable_value_new
+    set_variable_value(variable)
+    console.log(variable)
 }
 
 // Change the background color based on the temperature value, could use range parameter for each value. eg, get info from config file on server for each variable, alarm enabled, alarm status, range high, range low.
