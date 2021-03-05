@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from waitress import serve      # Production server for windows applications
 #import gunicorn                # Production server for linux applications
 import auxiliary_calculations
-import shed_control
+import shed
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -53,7 +53,7 @@ all_off = settings["all_off"]
 #------------------- Initialize alarms ---------------------------------------------------------------------------------
 alarm = {}
 for key in settings["alarm"]:
-    alarm[key] = shed_control.alarm(key,settings["alarm"][key])
+    alarm[key] = shed.alarm(key,settings["alarm"][key])
 
 print(alarm["Gas_analyzer_shed3"].limit_high)
 

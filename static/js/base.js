@@ -140,8 +140,8 @@ function ButtonFunction(variable){
 
 }
 
-// checkbox update on refresh
-function UpdateInputValues() {
+// checkbox slider on refresh
+function UpdateRangeValues() {
     var allVariables = document.querySelectorAll('[value]');
     
 }
