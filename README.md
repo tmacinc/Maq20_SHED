@@ -14,8 +14,12 @@ Current modules:
 1. app.py - This is the Flask application. It includes basic route functions for serving the front end, responding to AJAX requests, and starts a background thread and queue for adding additional control operations.
 
 2. daq.py - This is an in between layer for the Maq20 API. It allows the app to interact with the daq using established variable names that are consistent throughout the python, javascript and html. Multiple instances can be used if multiple Maq20's are used for a project.
+
+3. daq_demo.py - This is for offline development when a daq isn't available. Basic functionality of random number generators for input channels, and tracking of output channel settings. Enable by setting demo = True.
+
+4. alarms.py - Class for alarms. 
 ### Javascript
-1. base.js - This module is used to update the front end with current values from the variable list in python. It also monitors inputs for changes and send the requested change to app.py to be updated. This functions using HTML tag id's. If the tag id = variable name in app.variables, the value will be requested. Add input_ as a prefix to the tag id for inputs and these will be monitored for changes and sent to app.py on changes.
+1. base.js - This module is used to update the front end with current values from the variable list in python. It also monitors inputs for changes and send the requested change to app.py to be updated. This functions using HTML tag id's. If the tag id = variable name in app.variables, the value will be requested. Add input_ as a prefix to the tag id for inputs and these will be monitored for changes and sent to app.py on changes. Button toggle functionality is working. Use onclick="buttonClicked('variable_name') in button html tag - this requires another html tag with the current status of the variable as the function checks the current status and send the toggle request to app.py.
 
 2. index.js - working file with lots of functionality. Needs to be cleaned up and split into further modules. Has socket functionality.
 
