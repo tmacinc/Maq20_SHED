@@ -1,6 +1,6 @@
 
 //Get current values from server and update display. Activated at interval as set in document.ready function
-function update_page_variables(variables_to_update){
+function update_page_variables(variables_to_update, options){
     var variables_to_update_dict = {};
     for (var index = 0; index < variables_to_update.length; index++){  // build dict object of name: value, to send to server.
         variables_to_update_dict[variables_to_update[index]] = variables_to_update[index];
@@ -15,6 +15,15 @@ function update_page_variables(variables_to_update){
             for (var i in updated_variables) {
                 updated_variable = updated_variables[i];
                 // add step to check for certain keywords and convert 0/1 to on/off (ie pump, fan, etc)
+                if (i in options){                              // check if variable has option
+                    if (options[i] == 'onOff'){                  // check if option is onOff and replace 1/0 with On/Off
+                        if (updated_variable == 1){
+                            updated_variable = 'On';
+                        }else{
+                            updated_variable = 'Off';
+                        }
+                    }
+                }
                 $('#' + i).html(updated_variable);               // update value at current id
                 $('#' + i).addClass('bold');                    // bold numbers when they are updated
                 //changeBackgroundColor("#" + i, number_received);// change background color based on value for alarming reasons
@@ -40,7 +49,7 @@ function buttonClicked(variable_id){
     var variable_value_current = $('#' + variable_id).text(); // text is used for getting the html string between the tag brackets. Val works on input boxes.
     var variable_value_new = 0
     console.log(variable_value_current)
-    if (variable_value_current == 0) { 
+    if ((variable_value_current == 0) || (variable_value_current == 'Off')) { 
         variable_value_new = 1
     }else{
         variable_value_new = 0
@@ -49,6 +58,22 @@ function buttonClicked(variable_id){
     variable[variable_id] = variable_value_new
     set_variable_value(variable)
     console.log(variable)
+}
+
+// Initializes options list. Checks for _onOff suffix on tag id, removes from id and stores variable name in option list. For use on update to change 1/0 to on/off. -> call before get_variables
+function check_ID_Options(allIDs){
+    //var allIDs = document.querySelectorAll('[id]');             // get IDs from html
+    var options = {};                                           // initialize options list
+    for (var i = 0; i < allIDs.length; i++){                    // loop through list of IDs
+        var id = allIDs[i].id;                                  // get current id
+        if (id.includes('_onOff')){                             // check if id includes option onOff
+            var new_id = id.replace("_onOff", "");              // replace option with blank and save new id
+            document.getElementById(id).id = new_id;            // replace original id with new id
+            options[new_id] = 'onOff';                           // add to options object for future use
+        }
+    }
+    console.log(options)
+    return options
 }
 
 // Change the background color based on the temperature value, could use range parameter for each value. eg, get info from config file on server for each variable, alarm enabled, alarm status, range high, range low.
@@ -68,6 +93,8 @@ function changeBackgroundColor(input, value){
 // get page variables and separate into indicators and controls (inputs and outputs).
     function get_variables(){
         var allVariables = document.querySelectorAll('[id]');               // get all id names from html
+        var options = check_ID_Options(allVariables);                       // check if id has associated option
+        console.log(allVariables)
         var inputs = [];
         var outputs = [];
         for (var index = 0; index < allVariables.length; index++){          // iterate through list, separating inputs and removing the input_tag from the names
@@ -79,8 +106,7 @@ function changeBackgroundColor(input, value){
                 outputs.push(variable);
             }}
         var variables = {"Inputs": inputs, "Outputs": outputs}              // return object {dict} on input and output names
-        console.log(variables)
-        return variables;
+        return [variables, options];
       }
 
 // create string of input names to watch in .change function. Uses the format for jquery of #input_id, etc
@@ -122,11 +148,14 @@ $(document).ready(function(){
         }
     });
 
+
 // get list of variables used by page (tags which have and id="")
-    var variables = get_variables()
+    var variables_options = get_variables()
+    var variables = variables_options[0]
+    var options = variables_options[1]
     
 // Set JQuery refresh interval.
-  setInterval(update_page_variables, 1000, variables.Outputs)
+  setInterval(update_page_variables, 1000, variables.Outputs, options)
 
 // monitor inputs for changes, trying to use variables.Inputs to automatically work with changing html
     var input_string = generate_input_string(variables.Inputs)      // generate list of current inputs as a string to monitor for changes
