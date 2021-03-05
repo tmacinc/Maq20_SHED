@@ -19,7 +19,7 @@ Current modules:
 
 4. alarms.py - Class for alarms. 
 ### Javascript
-1. base.js - This module is used to update the front end with current values from the variable list in python. It also monitors inputs for changes and send the requested change to app.py to be updated. This functions using HTML tag id's. If the tag id = variable name in app.variables, the value will be requested. Add input_ as a prefix to the tag id for inputs and these will be monitored for changes and sent to app.py on changes. Button toggle functionality is working. Use onclick="buttonClicked('variable_name') in button html tag - this requires another html tag with the current status of the variable as the function checks the current status and send the toggle request to app.py.
+1. base.js - This module is used to update the front end with current values from the variable list in python. It also monitors inputs for changes and send the requested change to app.py to be updated. This functions using HTML tag id's. If the tag id = variable name in app.variables, the value will be requested. Add input_ as a prefix to the tag id for inputs and these will be monitored for changes and sent to app.py on changes. Button toggle functionality is working. Use onclick="buttonClicked('variable_name') in button html tag - this requires another html tag with the current status of the variable as the function checks the current status and send the toggle request to app.py. Add _onOff as a suffix to convert 1/0 indicators to show On/Off.
 
 2. index.js - working file with lots of functionality. Needs to be cleaned up and split into further modules. Has socket functionality.
 
