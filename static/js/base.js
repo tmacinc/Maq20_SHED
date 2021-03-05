@@ -49,7 +49,7 @@ function buttonClicked(variable_id){
     var variable_value_current = $('#' + variable_id).text(); // text is used for getting the html string between the tag brackets. Val works on input boxes.
     var variable_value_new = 0
     console.log(variable_value_current)
-    if ((variable_value_current == 0) || (variable_value_current == 'Off')) { 
+    if ((variable_value_current == 0) || (variable_value_current == 'Off')) {       // check the current state, case added for onOff option
         variable_value_new = 1
     }else{
         variable_value_new = 0
