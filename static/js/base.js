@@ -44,6 +44,7 @@ function set_variable_value(variable_to_set){
 }
 
 // Runs on button clicks. Checks the current variable value using an indicator, toggles the state and calls set_variable_value to update the variable in the server
+// example html usage -> <button type="button" onclick="buttonClicked('variable_name')">Variable Name</button>
 function buttonClicked(variable_id){
     var variable_value_current = $('#' + variable_id).text(); // text is used for getting the html string between the tag brackets. Val works on input boxes.
     var variable_value_new = 0                      
