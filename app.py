@@ -55,13 +55,13 @@ alarm = {}
 for key in settings["alarm"]:
     alarm[key] = shed.alarm(key,settings["alarm"][key])
 
-print(alarm["Gas_analyzer_shed3"].limit_high)
-
-print(alarm)
-alarm["Gas_analyzer_shed3"].limit_high = 42
-print(alarm["Gas_analyzer_shed3"].limit_high)
 
 
+#-------------------Initialize SHED class ------------------------------------------------------------------------------
+shed_status = {}
+
+for key in settings["system_variables"]:
+    shed_status[key] = shed.shed(key, settings["system_variables"][key])
 #------------------- Route Functions - Perform task when browser directs to link (serves html etc) ---------------------
 
 #------------------- Html routes ---------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ def all_health():
 def all_control():
     print("Page reload")
     print(alarm["Gas_analyzer_shed2"].limit_low)
-    return render_template('all_control.html', vars_eng = vars_raw, limits = alarm)
+    return render_template('all_control.html', vars_eng = vars_eng, limits = alarm, shed=shed_status)
 
 #------------------- Data routes used by JQuery ------------------------------------------------------------------------
 
@@ -158,23 +158,16 @@ def background_tasks(queue=Queue):
         t_now = datetime.now()
         read_daq()
         update_calculated_variables()
+
         alarm_monitor()
 
 #---------------------- Update SHED operation functions ----------------------------------------------------------------
 
 def update_shed_request(request): # update shed request from webpage
-    for key in request.keys():
-        if request[key] == "true":
-            vars_sys[key]["request"] = "on"
-        elif request[key] == "false":
-            vars_sys[key]["request"] = "off"
-        if vars_sys[key]["state"] != "alarm":
-            vars_sys[key]["state"] = vars_sys[key]["request"]
-            daq.write_channels(vars_sys[key]["state_settings"][vars_sys[key]["state"]])
-        else: 
-            pass
-    if vars_sys["SHED1"]["state"] == vars_sys["SHED2"]["state"] == vars_sys["SHED3"]["state"] == "off":
-        daq.write_channels(all_off)
+    shed_status[request].shed.change_state()
+    daq.write_channels(shed_status[request].new_state_output())
+
+
 
 def update_alarm_limit(request):
     for key in request.keys():
@@ -193,6 +186,9 @@ def alarm_monitor():
     for key in alarm:
         alarm[key].update_state(vars_eng[key])
 
+def shed_pid(shed_label): #shed_label should be SHED2 or 3 depending which is active
+    pid_output = {}
+    pid_output[shed[shed_label].pid_valve] = shed[shed_label].pid_func(vars_eng[shed[shed_label].pid_control])
 
 
 def update_calculated_variables():

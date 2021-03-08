@@ -362,7 +362,33 @@
                 <input id="input_SHED2" name="input_SHED2" type="checkbox" />
                 <label for="input_SHED2">SHED2 on/off</label>
             </div>
-            <div class="t1" id="T_shed2">0</div>
+            <table width="100%" >
+                <tr><td colspan="5"><div class="t1" id="T_shed2">0</div></td></tr>
+                <tr>
+                    <th colspan="2">PID control Settings</th>
+                    <td colspan="3">
+                        <label for="input_setpoint_T_shed2">SHED2 Temperature Setpoint:</label>
+                        <input type="number" id="input_setpoint_T_shed2" min="0" max="100" value= {{ shed.SHED2.set_temp }}>
+                    </td>
+                </tr>
+                <tr>
+                    <td>PID button</td>
+                    <td >PID on/off notification</td>
+                    <td>
+                        <label for="input_setpoint_P_shed2">P:</label>
+                        <input type="number" id="input_setpoint_P_shed2" min="0" max="100" value= {{ shed.SHED2.p}}>
+                    </td>
+                    <td>
+                        <label for="input_setpoint_I_shed2">I:</label>
+                        <input type="number" id="input_setpoint_I_shed2" min="0" max="100" value= {{ shed.SHED2.i}}>
+                    </td>
+                    <td>
+                        <label for="input_setpoint_D_shed2">D:</label>
+                        <input type="number" id="input_setpoint_D_shed2" min="0" max="100" value= {{ shed.SHED2.d}}>
+                    </td>
+                </tr>    
+            </table>
+            
             <table>
 
                 <tr>

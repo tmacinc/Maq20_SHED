@@ -133,6 +133,19 @@
         "SHED1" : {
             "request" : "off",
             "state" : "off",
+            "set_temp": 0,
+            "limits":{
+                "high": 100,
+                "low": -200
+            },
+            "PID": {
+                "control": "T_shed1_cold",
+                "valve_control": "Valve_shed1_cold",
+                "on/off": "off",
+                "p": 0,
+                "i": 0,
+                "d": 0
+            },
             "state_settings": {
                 "off":{
                     "Pump_shed1_cold" : 0,
@@ -160,39 +173,23 @@
                     "Valve_main_cold": 0   
                 }
 
-            },
-            "flow_limits": {
-                "high": {
-                    "T_shed1_cold": 15,
-                    "T_main_cold": 15
-                },
-                "low": {
-                    "Flowmeter_shed1_cold" : 4.5,
-                    "Flowmeter_main_cold": 4.5
-                }
-                
-                
-            },
-            "alarm_limits": {
-                "high": {
-                "Alarm_shed1" : 1
-                },
-                "low" : {}
             }
         },
         "SHED2" : {
             "request" : "off",
             "state" : "off",
             "set_temp": 42,
+            "limits":{
+                "high": 45,
+                "low": 41
+            },
             "PID": {
                 "control": "T_shed2",
+                "valve_control": "Valve_shed2_hot",
+                "on/off": "off",
                 "p": 0,
                 "i": 0,
-                "d": 0,
-                "limits":{
-                    "low": 0,
-                    "high" : 0
-                }
+                "d": 0
             },
             "state_settings" : {
                 "off":{
@@ -222,46 +219,24 @@
                     "Pump_shed2_cold": 0,
                     "Valve_shed2_cold": 0,
                     "Door_shed2_seal": 0
-                }
-            },
-            "flow_limits": {
-                "high": {
-                },
-                "low": {
-                    "T_shed3_hot": 40,
-                    "Flowmeter_shed3_hot" : 4.5,
-                    "T_main_hot": 42,
-                    "Flowmeter_main_hot": 4.5               
-                }
-            },
-            "alarm_limits": {
-                "high": {
-                    "Gas_analyzer_shed3": 0.9
-                },
-                "low": {}
-            },
-            "shed_temp_range":{
-                "low": {
-                    "T_shed3": 41.5
-                },
-                "high":{
-                    "T_shed3": 45
-                }
+                }            
             }
         },
         "SHED3" : {
             "request" : "off",
             "state" : "off",
             "set_temp": 42,
+            "limits":{
+                "high": 45,
+                "low": 41
+            },
             "PID": {
+                "on/off": "off",
                 "control": "T_shed3",
+                "valve_control": "Valve_shed3_hot",
                 "p": 0,
                 "i": 0,
-                "d": 0,
-                "limits":{
-                    "low": 0,
-                    "high" : 0
-                }
+                "d": 0
             },
             "state_settings" : {
                 "off":{
@@ -288,30 +263,6 @@
                     "Valve_shed3_cold": 0,
                     "Door_shed3_seal": 0
                 }
-            },
-            "flow_limits": {
-                "high": {
-                },
-                "low": {
-                    "T_shed3_hot": 40,
-                    "Flowmeter_shed3_hot" : 4.5,
-                    "T_main_hot": 42,
-                    "Flowmeter_main_hot": 4.5               
-                }
-            },
-            "alarm_limits": {
-                "high": {
-                    "Gas_analyzer_shed3": 0.9
-                },
-                "low": {}
-            },
-            "shed_temp_range":{
-                "low": {
-                    "T_shed3": 41.5
-                },
-                "high":{
-                    "T_shed3": 45
-                }
             }
         }
     },
@@ -330,6 +281,17 @@
         "Flowmeter_shed1_cold": 151.4
     },
     "alarm":{
+        "Alarm_shed1":{
+            "state":0,
+            "limit_type": "inside",
+            "limits":{ 
+                "high":1,
+                "low":0
+            },
+            "active_config":{
+                
+            }
+        },
         "Gas_analyzer_shed2":{
             "state": 0,
             "limit_type": "inside",
@@ -509,6 +471,41 @@
                 "low": 48
             },
             "active_config":{}
+        }
+
+    },
+    "deadhead":{
+        "Valve_shed3_hot": {
+            "limit": 0.5,
+            "contol": "Pump_shed3_hot"
+        },
+        "Valve_shed3_cold": {
+            "limit": 0.5,
+            "contol": "Pump_shed3_cold"
+        },
+        "Valve_shed2_hot": {
+            "limit": 0.5,
+            "contol": "Pump_shed2_hot"
+        },
+        "Valve_shed2_cold": {
+            "limit": 0.5,
+            "contol": "Pump_shed2_cold"
+        },
+        "Valve_main_hot": {
+            "limit": 0.5,
+            "contol": "Pump_main_hot"
+        }, 
+        "Valve_main_cold": {
+            "limit": 0.5,
+            "contol": "Pump_main_cold"
+        },
+        "Valve_shed1_cold": {
+            "limit": 0.5,
+            "contol": "Pump_shed1_cold"
+        },
+        "Valve_shed1_hot": {
+            "limit": 0.5,
+            "contol": "Pump_shed1_hot"
         }
 
     }
