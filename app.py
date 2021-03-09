@@ -164,13 +164,14 @@ def background_tasks(queue=Queue):
 #---------------------- Update SHED operation functions ----------------------------------------------------------------
 
 def update_shed_request(request): # update shed request from webpage
-    shed_status[request].shed.change_state()
-    daq.write_channels(shed_status[request].new_state_output())
+    for key, value in request.items():
+        shed_status[key].change_state(value)
+        daq.write_channels(shed_status[key].new_state_output())
 
 
 
 def update_alarm_limit(request):
-    for key in request.keys():
+    for key, value in request.items():
         if key.startswith("low_"):
             key2 = key[4:]
             alarm[key2].change_limit("low",request[key])
@@ -188,7 +189,7 @@ def alarm_monitor():
 
 def shed_pid(shed_label): #shed_label should be SHED2 or 3 depending which is active
     pid_output = {}
-    pid_output[shed[shed_label].pid_valve] = shed[shed_label].pid_func(vars_eng[shed[shed_label].pid_control])
+    pid_output[shed_status[shed_label].pid_valve] = shed_status[shed_label].pid_func(vars_eng[shed_status[shed_label].pid_control])
 
 
 def update_calculated_variables():

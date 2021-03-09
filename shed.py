@@ -17,12 +17,14 @@ class shed():
             self.pid = PID(self.p, self.i, self.d, self.set_temp)
             self.pid_valve = settings["PID"]["valve_control"]
             self.pid_control = settings["PID"]["control"]
-    def change_state(self):
-        if self.state =="off":
+    def change_state(self, value):
+        if self.state =="off" and value == "true":
             self.state = "on" 
-        if self.state == "on":
+        if self.state == "on" and value == "false":
             self.state = "off"
-        if self.state == "alarm":
+        if self.state == "alarm" and value == "true":
+            pass
+        if self.state == "alarm" and value == "false":
             pass
 
     def new_state_output(self):

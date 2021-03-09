@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
-<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
-<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-linear-gauge.min.js"></script>
 <script src="static/js/base.js"></script>
 <div class="permeation_grid">
 <div class="permeation_overview">
+    <h3>Main Flow</h3>
     <div class="permeation_overview_hot inline">
         <div class="inline">    
             <div>Hot loop</div>
@@ -63,20 +61,15 @@
     <div>
         Valve Shed 3 Hot
     </div>
-    <input type="range" min="0" max="10" value="0" step="0.5" id="input_Valve_shed3_hot" name="input_Valve_shed3_hot">
+    <input type="range" min="-2" max="2" value="0" step="0.1" id="input_Valve_shed3_hot" name="input_Valve_shed3_hot">
     <div>
         MVDN Placeholder 7
     </div>
     <div id="MVDN_Placeholder_7">0</div>
-</div>
-<div class="permeation_gauges">
-    <div class="inputgroup">
-        <input id="input_SHED3" name="input_SHED3_request" type="checkbox"/>
-        <label for="input_SHED3">SHED3 on/off</label>
+    <div>
+        <button type="button" onclick="buttonClicked('Pump_shed3_hot')">Shed3 Pump Hot</button>
     </div>
-
-    
-
+    <div id="Pump_shed3_hot_onOff">NA</div>
 </div>
 </div>
 
