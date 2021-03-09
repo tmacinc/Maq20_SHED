@@ -1,8 +1,8 @@
 
-//Get current values from server and update display. Activated at interval as set in document.ready function
-function update_page_variables(variables_to_update, options){
+//Get current values from server and update display. Activated at interval as set in document.ready function. Passing true to update_controls allows the front end to be synchronized with the server, or to update during auto control modes.
+function update_page_variables(variables_to_update, options, update_controls = false){
     var variables_to_update_dict = {};
-    for (var index = 0; index < variables_to_update.length; index++){  // build dict object of {name: value}, to send to server.
+    for (var index = 0; index < variables_to_update.length; index++){  // build dict object of {name: value}, to send to server. (Here, value = name)
         variables_to_update_dict[variables_to_update[index]] = variables_to_update[index];
     };
     $.ajax({                                                           // ajax 'get' request to server.
@@ -12,25 +12,45 @@ function update_page_variables(variables_to_update, options){
         success: function(response){                                   // parse response from server
             var updated_variables = response.ajax_data;
             console.log(updated_variables);
+            updated_variables = update_options(updated_variables, options); // Check if variables have options and apply changes
             for (var i in updated_variables) {                         // Loop through response and update each variable
                 updated_variable = updated_variables[i];
-                if (i in options){                              // check if variable has option
-                    if (options[i] == 'onOff'){                  // check if option is onOff and replace 1/0 with On/Off
-                        if (updated_variable == 1){
-                            updated_variable = 'On';
+                $('#' + i).html(updated_variable);               // update value at current id
+                $('#' + i).addClass('bold');                    // bold numbers when they are updated
+                if (update_controls == true){                       // case for updating control setting. 
+                    var type = $("#input_" + i).attr('type');       // check input type
+                    if (type == 'checkbox'){                        // if checkbox set checked to current value
+                        console.log(updated_variable)
+                        if (updated_variable == 1 || updated_variable == "On"){
+                            document.getElementById('input_' + i).checked = true;
                         }else{
-                            updated_variable = 'Off';
+                            document.getElementById('input_' + i).checked = false;
                         }
                     }
                 }
-                $('#' + i).html(updated_variable);               // update value at current id
-                $('#' + i).addClass('bold');                    // bold numbers when they are updated
                 //changeBackgroundColor("#" + i, number_received);// change background color based on value for alarming reasons
             }
         }
     })
 }
 
+// this function is used to check if the variable has a special option and applies the option. Currently converts 1/0 to On/Off. 
+function update_options(variables, options){
+    var updated_variables = {}
+    for (i in variables){
+        variable = variables[i]
+            if (i in options){                              // check if variable has option
+                if (options[i] == 'onOff'){                  // check if option is onOff and replace 1/0 with On/Off
+                    if (variable == 1){
+                        variable = 'On';
+                    }else{
+                    variable = 'Off';
+                }
+        }}
+        updated_variables[i] = variable
+    }
+    return updated_variables
+}    
 // This function is used to set variable values in the server
 function set_variable_value(variable_to_set){
     $.ajax({                                                    // Ajax request to send data to server
@@ -70,7 +90,7 @@ function check_ID_Options(allIDs){
             options[new_id] = 'onOff';                           // add to options object for future use
         }
     }
-    console.log(options)
+    //console.log(options)
     return options
 }
 
@@ -89,52 +109,62 @@ function changeBackgroundColor(input, value){
 }
 
 // get page variables and separate into indicators and controls (inputs and outputs). Builds list of variables for use in monitoring for changes and updating
-    function get_variables(){
-        var allVariables = document.querySelectorAll('[id]');               // get all id names from html
-        var options = check_ID_Options(allVariables);                       // check if id has associated option
-        console.log(allVariables)
-        var inputs = [];
-        var outputs = [];
-        for (var index = 0; index < allVariables.length; index++){          // iterate through list, separating inputs and removing the input_tag from the names
-            var variable = allVariables[index].id;
-            if (variable.includes('input_')){
-              var input = variable.replace("input_", "");
-              inputs.push(input);
-            }else{
-                outputs.push(variable);
-            }}
-        var variables = {"Inputs": inputs, "Outputs": outputs}              // return object {dict} of input and output names
-        return [variables, options];
-      }
+function get_variables(){
+    var allVariables = document.querySelectorAll('[id]');               // get all id names from html
+    var options = check_ID_Options(allVariables);                       // check if id has associated option
+    //console.log(allVariables)
+    var inputs = [];
+    var outputs = [];
+    for (var index = 0; index < allVariables.length; index++){          // iterate through list, separating inputs and removing the input_tag from the names
+        var variable = allVariables[index].id;
+        if (variable.includes('input_')){
+            var input = variable.replace("input_", "");
+            inputs.push(input);
+        }else{
+            outputs.push(variable);
+        }}
+    var variables = {"Inputs": inputs, "Outputs": outputs}              // return object {dict} of input and output names
+    return [variables, options];
+    }
 
 // create string of input names to watch in .change function. Uses the format for jquery of #input_id, etc. This is used as the actual string that JQuery uses to monitor for changes to controls
-    function generate_input_string(Inputs){
-        var input_string = "";
-        for (var i = 0; i < Inputs.length; i++){                            // build JQuery string for each variable. Uses the format "#input_variableName, ". The string will have all of the variables separated by commas.i
-            var str1 = "#";
-            var str2 = "input_";
-            var str3 = Inputs[i];
-            var str4 = ", "
-            input_string = input_string.concat(str1, str2, str3, str4);
-        }
-        input_string = input_string.slice(0, -2);                           // removes trailing ", " from the end of the string.
-        return input_string
+function generate_input_string(Inputs){
+    var input_string = "";
+    for (var i = 0; i < Inputs.length; i++){                            // build JQuery string for each variable. Uses the format "#input_variableName, ". The string will have all of the variables separated by commas.i
+        var str1 = "#";
+        var str2 = "input_";
+        var str3 = Inputs[i];
+        var str4 = ", "
+        input_string = input_string.concat(str1, str2, str3, str4);
     }
+    input_string = input_string.slice(0, -2);                           // removes trailing ", " from the end of the string.
+    return input_string
+}
 
 // get initial list of inputs and store their values. This is used for checking when controls are changed. Inputs are compared to their previous values and sent to server when they are changed.
-    function get_input_values(Inputs){                              // gets the current settings from all id's with prefix input_, currently working for checkbox and numeric, add others as needed.
-        var input_values = {}
-        for (var i = 0; i < Inputs.length; i++){
-            var type = $("#input_" + Inputs[i]).attr('type');       // check input type
-            if (type == 'checkbox'){
-                input_values[Inputs[i]] = $("#input_" + Inputs[i]).prop('checked');
-            }
-            else {
-            input_values[Inputs[i]] = $("#input_" + Inputs[i]).val()
-            }
+    // This could grab the values from the server and update the display instead
+function get_input_values(Inputs){                              // gets the current settings from all id's with prefix input_, currently working for checkbox and numeric, add others as needed.
+    var input_values = {}
+    for (var i = 0; i < Inputs.length; i++){
+        var type = $("#input_" + Inputs[i]).attr('type');       // check input type
+        if (type == 'checkbox'){
+            input_values[Inputs[i]] = $("#input_" + Inputs[i]).prop('checked');
         }
-        return input_values
+        else {
+        input_values[Inputs[i]] = $("#input_" + Inputs[i]).val()
+        }
     }
+    console.log(input_values)
+    return input_values
+}
+
+// Initializes the input values from the server when the page loads.
+function initialize_input_values(Inputs, options){
+     // get input variables. Get values from server. Push values to page. Store in input_values for future use.
+    update_page_variables(Inputs, options, true)
+
+}
+
 
 //Runs once the document is ready and published in the browser.
 $(document).ready(function(){
@@ -151,7 +181,7 @@ $(document).ready(function(){
     var variables_options = get_variables()                         // Get page variables and their associated options
     var variables = variables_options[0]                            // Create list of page variables
     var options = variables_options[1]                              // Create list of variable options
-    
+    initialize_input_values(variables.Inputs, options)
 // Set JQuery refresh interval. This updates the page variables at the set frequency "1 Hz"
   setInterval(update_page_variables, 1000, variables.Outputs, options)
 
