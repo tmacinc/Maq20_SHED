@@ -167,7 +167,8 @@ def update_shed_request(request): # update shed request from webpage
     for key, value in request.items():
         shed_status[key].change_state(value)
         daq.write_channels(shed_status[key].new_state_output())
-
+    if shed_status["SHED1"].state == shed_status["SHED2"].state == shed_status["SHED3"].state == "off":
+        daq.write_channels(all_off)
 
 
 def update_alarm_limit(request):
