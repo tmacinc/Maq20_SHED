@@ -23,7 +23,9 @@ class dataforth():
         self.mod8_DIO_DIOL = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         self.module_instances = [self.mod1_AI_MVDN, self.mod2_AI_TTC]#, self.mod3_AO_VO, self.mod4_DI_DIV20, self.mod5_DIO_DIOL, self.mod6_DIO_DIOL, self.mod7_DIO_DIOL, self.mod8_DIO_DIOL]
         self.modules = dict(zip(self.module_names, self.module_instances))
-
+        self.outputs = {}
+        for channel in self.channel_map_outputs:
+            self.outputs[channel] = 0
         #-----Initialize Special Functions on DIOL modules----
         
 
@@ -55,30 +57,14 @@ class dataforth():
         pass
 
     def read_channels(self, channels): # ignores the list of requested channels and updates all channels with random numbers.
-        data = {
-            'T_shed3_l': random.uniform(0.4, 0.5),
-            'T_shed3_r': random.uniform(0.4, 0.5),
-            'T_shed2_l': random.uniform(0.4, 0.5),
-            'T_shed2_r': random.uniform(0.4, 0.5),
-            'Flowmeter_shed3_hot' : random.uniform(8, 10),
-            'Flowmeter_shed3_cold' : random.uniform(7, 8),
-            'Flowmeter_shed2_hot' : random.uniform(6, 7),
-            'Flowmeter_shed2_cold' : random.uniform(5, 10),
-            'Flowmeter_main_hot' : random.uniform(1, 10),
-            'Flowmeter_main_cold' : random.uniform(5, 8),
-            'Flowmeter_shed1_hot' : random.uniform(5, 9),
-            'Flowmeter_shed1_cold' : random.uniform(10, 16),
-            'T_shed3_hot' :  random.uniform(10, 65),
-            'T_shed3_cold' : random.uniform(10, 65),
-            'T_shed2_hot' : random.uniform(10, 65),
-            'T_shed2_cold' : random.uniform(10, 65),
-            'T_main_hot' : random.uniform(10, 65),
-            'T_main_cold' : random.uniform(10, 65),
-            'T_shed1_hot' : random.uniform(10, 65),
-            'T_shed1_cold' : random.uniform(10, 65)
-        }
-        
-        
+        data = {}
+        for channel in channels:
+            if channel in self.channel_map_outputs:
+                data[channel] = self.outputs[channel]
+            else:
+                key = str(channel)
+                data[key] = random.uniform(2, 4)
+              
         # call scale/calibration function and correct values before returning
         return data
 
@@ -86,25 +72,29 @@ class dataforth():
         for key in channels.keys():
             if key in self.channel_configs.keys(): # check for special function
                 if self.channel_configs[key] == "frequency_generator":
-                    module = str(self.channel_map_outputs[key])[:-3]
-                    if str(self.channel_map_outputs[key])[-2] == '0': #case for timer 0 on input 0
-                        timer = 0
-                    elif str(self.channel_map_outputs[key])[-2] == '2': #case for time 1 on input 2
-                        timer = 1
+                    #module = str(self.channel_map_outputs[key])[:-3]
+                    #if str(self.channel_map_outputs[key])[-2] == '0': #case for timer 0 on input 0
+                    #    timer = 0
+                    #elif str(self.channel_map_outputs[key])[-2] == '2': #case for time 1 on input 2
+                    #    timer = 1
                     frequency = str(channels[key])
-                    exec("self." + module + ".write_special_function_5_frequency_generator(timer=" + str(timer) + ", frequency=" + frequency + ")")
+                    #exec("self." + module + ".write_special_function_5_frequency_generator(timer=" + str(timer) + ", frequency=" + frequency + ")")
+                    self.outputs[key] = frequency
             else: # regular output (boolean + AO) add other function with elif statements
                 if key in self.channel_map_outputs.keys():
                     if 'DIO' in str(self.channel_map_outputs[key]):
-                        if channels[key] == 'true' or channels[key] == 1:
-                            value = 0
-                        else:
+                        if channels[key] == 'true' or channels[key] == 1 or channels[key] == "1":
                             value = 1
+                        else:
+                            value = 0
                     elif 'AO' in str(self.channel_map_outputs[key]):
                         value = channels[key]
-                    channel_to_write = str(self.channel_map_outputs[key])
-                    exec("self." + channel_to_write + '=' + str(value))
+                    #channel_to_write = str(self.channel_map_outputs[key])
+                    #exec("self." + channel_to_write + '=' + str(value))
+                    print(value)
+                    self.outputs[key] = value
                 else:
+                    print("Channel not found")
                     pass
 
 
