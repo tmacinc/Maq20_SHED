@@ -1,3 +1,4 @@
+### DEPRECEATED -> use version in ERMS
 Flask Frontend Template. 
 ======
 Work in progress using Dataforth Maq20 and variables from SHED.
